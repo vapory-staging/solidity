@@ -36,6 +36,7 @@ bool ControlFlowAnalyzer::visit(FunctionDefinition const& _function)
 	{
 		auto const& functionFlow = m_cfg.functionFlow(_function);
 		checkUninitializedAccess(functionFlow.entry, functionFlow.exit);
+		checkUnreachable(functionFlow.entry, functionFlow.exit, functionFlow.revert);
 	}
 	return false;
 }
@@ -144,4 +145,52 @@ void ControlFlowAnalyzer::checkUninitializedAccess(CFGNode const* _entry, CFGNod
 			);
 		}
 	}
+}
+
+void ControlFlowAnalyzer::checkUnreachable(CFGNode const* _entry, CFGNode const* _exit, CFGNode const* _revert) const
+{
+	std::set<CFGNode const*> reachable;
+	std::set<CFGNode const*> nodesToTraverse;
+
+	// collect all nodes reachable from the entry point
+	nodesToTraverse.insert(_entry);
+	while (!nodesToTraverse.empty())
+	{
+		CFGNode const* node = *nodesToTraverse.begin();
+		nodesToTraverse.erase(nodesToTraverse.begin());
+
+		if (reachable.insert(node).second)
+			for (CFGNode const* exit: node->exits)
+				nodesToTraverse.insert(exit);
+	}
+
+	// traverse all paths backwards from exit and revert
+	// and extract (valid) source locations of unreachable nodes into sorted set
+	std::set<CFGNode const*> visited;
+	std::set<SourceLocation> unreachable;
+	nodesToTraverse.insert(_exit);
+	nodesToTraverse.insert(_revert);
+	while (!nodesToTraverse.empty())
+	{
+		auto node = *nodesToTraverse.begin();
+		nodesToTraverse.erase(nodesToTraverse.begin());
+		visited.insert(node);
+
+		if (!reachable.count(node) && node->location.source && node->location.start != -1 && node->location.end != -1)
+			unreachable.insert(node->location);
+
+		for (CFGNode const* entry: node->entries)
+			if (!visited.count(entry))
+				nodesToTraverse.emplace(entry);
+	}
+
+	// merge into distinct contiguous source locations
+	std::vector<SourceLocation> sortedLocations;
+	if (!unreachable.empty())
+		for (auto it = unreachable.begin(); it != unreachable.end();)
+			for (sortedLocations.emplace_back(*it++); it != unreachable.end() && it->start <= sortedLocations.back().end; ++it)
+				sortedLocations.back().end = std::max(sortedLocations.back().end, it->end);
+
+	for (auto const& location: sortedLocations)
+		m_errorReporter.warning(location, "Unreachable code.");
 }
