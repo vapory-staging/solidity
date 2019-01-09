@@ -184,13 +184,12 @@ void ControlFlowAnalyzer::checkUnreachable(CFGNode const* _entry, CFGNode const*
 				nodesToTraverse.emplace(entry);
 	}
 
-	// merge into distinct contiguous source locations
-	std::vector<SourceLocation> sortedLocations;
-	if (!unreachable.empty())
-		for (auto it = unreachable.begin(); it != unreachable.end();)
-			for (sortedLocations.emplace_back(*it++); it != unreachable.end() && it->start <= sortedLocations.back().end; ++it)
-				sortedLocations.back().end = std::max(sortedLocations.back().end, it->end);
-
-	for (auto const& location: sortedLocations)
+	for (auto it = unreachable.begin(); it != unreachable.end();)
+	{
+		SourceLocation location = *it++;
+		// Extend the location, as long as the next location overlaps (unreachable is sorted).
+		for (; it != unreachable.end() && it->start <= location.end; ++it)
+			location.end = std::max(location.end, it->end);
 		m_errorReporter.warning(location, "Unreachable code.");
+	}
 }
