@@ -18,6 +18,7 @@
 #include <libsolidity/analysis/ControlFlowBuilder.h>
 
 using namespace dev;
+using namespace langutil;
 using namespace solidity;
 using namespace std;
 
@@ -448,15 +449,7 @@ bool ControlFlowBuilder::visit(Identifier const& _identifier)
 bool ControlFlowBuilder::visitNode(ASTNode const& _node)
 {
 	solAssert(!!m_currentNode, "");
-
-	if (!m_currentNode->location.source)
-		m_currentNode->location.source = _node.location().source;
-	if (m_currentNode->location.start < 0)
-		m_currentNode->location.start = _node.location().start;
-	else if (_node.location().start >= 0)
-		m_currentNode->location.start = std::min(_node.location().start, m_currentNode->location.start);
-	m_currentNode->location.end = std::max(_node.location().end, m_currentNode->location.end);
-
+	m_currentNode->location = langutil::SourceLocation::smallestCovering(m_currentNode->location, _node.location());
 	return true;
 }
 

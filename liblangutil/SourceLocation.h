@@ -49,6 +49,23 @@ struct SourceLocation
 
 	bool isEmpty() const { return start == -1 && end == -1; }
 
+	/// @returns the smallest SourceLocation that contains both @param _a and @param _b.
+	static SourceLocation smallestCovering(SourceLocation const& _a, SourceLocation const& _b)
+	{
+		SourceLocation result = _a;
+		if (!result.source)
+			result.source = _b.source;
+
+		if (result.start < 0)
+			result.start = _b.start;
+		else if (_b.start >= 0 && _b.start < result.start)
+			result.start = _b.start;
+		if (_b.end > result.end)
+			result.end = _b.end;
+
+		return result;
+	}
+
 	int start = -1;
 	int end = -1;
 	std::shared_ptr<CharStream> source;
