@@ -75,4 +75,28 @@ private:
 	V const* m_firstCycleVertex = nullptr;
 };
 
+template<typename V>
+struct BreadthFirstSearch
+{
+	template<typename ForEachChild>
+	BreadthFirstSearch& run(ForEachChild&& _forEachChild)
+	{
+		while(!verticesToTraverse.empty())
+		{
+			V const* v = *verticesToTraverse.begin();
+			verticesToTraverse.erase(verticesToTraverse.begin());
+			visited.insert(v);
+
+			_forEachChild(*v, [this](V const& _vertex) {
+				if (!visited.count(&_vertex))
+					verticesToTraverse.insert(&_vertex);
+			});
+		}
+		return *this;
+	}
+
+	std::set<V const*> verticesToTraverse;
+	std::set<V const*> visited{};
+};
+
 }
