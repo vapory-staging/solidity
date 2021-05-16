@@ -45,7 +45,7 @@ namespace test
 namespace
 {
 
-static char const* erc20Code = R"DELIMITER(
+static char const* vrc20Code = R"DELIMITER(
 (seq
 
   ;; --------------------------------------------------------------------------
@@ -386,20 +386,20 @@ static char const* erc20Code = R"DELIMITER(
   )
 )DELIMITER";
 
-static unique_ptr<bytes> s_compiledErc20;
+static unique_ptr<bytes> s_compiledVrc20;
 
 class LLLVRC20TestFramework: public LLLExecutionFramework
 {
 protected:
-	void deployErc20()
+	void deployVrc20()
 	{
-		if (!s_compiledErc20)
+		if (!s_compiledVrc20)
 		{
 			vector<string> errors;
-			s_compiledErc20.reset(new bytes(compileLLL(erc20Code, dev::test::Options::get().vvmVersion(), dev::test::Options::get().optimize, &errors)));
+			s_compiledVrc20.reset(new bytes(compileLLL(vrc20Code, dev::test::Options::get().vvmVersion(), dev::test::Options::get().optimize, &errors)));
 			BOOST_REQUIRE(errors.empty());
 		}
-		sendMessage(*s_compiledErc20, true);
+		sendMessage(*s_compiledVrc20, true);
 		BOOST_REQUIRE(!m_output.empty());
 	}
 
@@ -412,7 +412,7 @@ BOOST_FIXTURE_TEST_SUITE(LLLVRC20, LLLVRC20TestFramework)
 
 BOOST_AUTO_TEST_CASE(creation)
 {
-	deployErc20();
+	deployVrc20();
 
 	// All tokens are initially assigned to the contract creator.
 	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) == encodeArgs(TOKENSUPPLY));
@@ -420,7 +420,7 @@ BOOST_AUTO_TEST_CASE(creation)
 
 BOOST_AUTO_TEST_CASE(constants)
 {
-	deployErc20();
+	deployVrc20();
 
 	BOOST_CHECK(callContractFunction("totalSupply()") == encodeArgs(TOKENSUPPLY));
 	BOOST_CHECK(callContractFunction("decimals()") == encodeArgs(TOKENDECIMALS));
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(constants)
 
 BOOST_AUTO_TEST_CASE(send_value)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Send value to the contract. Should always fail.
 	m_sender = account(0);
@@ -449,7 +449,7 @@ BOOST_AUTO_TEST_CASE(send_value)
 
 BOOST_AUTO_TEST_CASE(transfer)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Transfer 100 tokens from account(0) to account(1).
 	int transfer = 100;
@@ -461,7 +461,7 @@ BOOST_AUTO_TEST_CASE(transfer)
 
 BOOST_AUTO_TEST_CASE(transfer_from)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Approve account(1) to transfer up to 1000 tokens from account(0).
 	int allow = 1000;
@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE(transfer_from)
 
 BOOST_AUTO_TEST_CASE(transfer_event)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Transfer 1000 tokens from account(0) to account(1).
 	int transfer = 1000;
@@ -502,7 +502,7 @@ BOOST_AUTO_TEST_CASE(transfer_event)
 
 BOOST_AUTO_TEST_CASE(transfer_zero_no_event)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Transfer 0 tokens from account(0) to account(1). This is a no-op.
 	int transfer = 0;
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE(transfer_zero_no_event)
 
 BOOST_AUTO_TEST_CASE(approval_and_transfer_events)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Approve account(1) to transfer up to 10000 tokens from account(0).
 	int allow = 10000;
@@ -554,7 +554,7 @@ BOOST_AUTO_TEST_CASE(approval_and_transfer_events)
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_1)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Transfer more than the total supply; ensure nothing changes.
 	int transfer = TOKENSUPPLY + 1;
@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE(invalid_transfer_1)
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_2)
 {
-	deployErc20();
+	deployVrc20();
 
 	// Separate transfers that togvapor exceed initial balance.
 	int transfer = 1 + TOKENSUPPLY / 2;
@@ -585,7 +585,7 @@ BOOST_AUTO_TEST_CASE(invalid_transfer_2)
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_from)
 {
-	deployErc20();
+	deployVrc20();
 
 	// TransferFrom without approval.
 	int transfer = 300;
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE(invalid_transfer_from)
 
 BOOST_AUTO_TEST_CASE(invalid_reapprove)
 {
-	deployErc20();
+	deployVrc20();
 
 	m_sender = account(0);
 
@@ -623,7 +623,7 @@ BOOST_AUTO_TEST_CASE(invalid_reapprove)
 
 BOOST_AUTO_TEST_CASE(bad_data)
 {
-	deployErc20();
+	deployVrc20();
 
 	m_sender = account(0);
 
