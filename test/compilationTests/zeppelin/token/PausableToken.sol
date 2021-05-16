@@ -6,7 +6,7 @@ import '../lifecycle/Pausable.sol';
 /**
  * Pausable token
  *
- * Simple ERC20 Token example, with pausable token creation
+ * Simple VRC20 Token example, with pausable token creation
  **/
 
 contract PausableToken is StandardToken, Pausable {

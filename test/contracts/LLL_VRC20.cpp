@@ -17,7 +17,7 @@
 /**
  * @author Ben Edgington <ben@benjaminion.xyz>
  * @date 2017
- * Tests for an ERC20 token implementation written in LLL
+ * Tests for an VRC20 token implementation written in LLL
  */
 
 #include <string>
@@ -168,7 +168,7 @@ static char const* erc20Code = R"DELIMITER(
 
   ;; --------------------------------------------------------------------------
   ;; Checks that ensure that each function is called with the right
-  ;;   number of arguments. For one thing this addresses the "ERC20
+  ;;   number of arguments. For one thing this addresses the "VRC20
   ;;   short address attack". For another, it stops me making
   ;;   mistakes while testing. We use these only on the non-constant functions.
 
@@ -388,7 +388,7 @@ static char const* erc20Code = R"DELIMITER(
 
 static unique_ptr<bytes> s_compiledErc20;
 
-class LLLERC20TestFramework: public LLLExecutionFramework
+class LLLVRC20TestFramework: public LLLExecutionFramework
 {
 protected:
 	void deployErc20()
@@ -407,8 +407,8 @@ protected:
 
 }
 
-// Test suite for an ERC20 contract written in LLL.
-BOOST_FIXTURE_TEST_SUITE(LLLERC20, LLLERC20TestFramework)
+// Test suite for an VRC20 contract written in LLL.
+BOOST_FIXTURE_TEST_SUITE(LLLVRC20, LLLVRC20TestFramework)
 
 BOOST_AUTO_TEST_CASE(creation)
 {

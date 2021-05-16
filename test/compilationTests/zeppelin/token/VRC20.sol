@@ -1,14 +1,14 @@
 pragma solidity ^0.4.11;
 
 
-import './ERC20Basic.sol';
+import './VRC20Basic.sol';
 
 
 /**
- * @title ERC20 interface
+ * @title VRC20 interface
  * @dev see https://github.com/vaporyco/EIPs/issues/20
  */
-contract ERC20 is ERC20Basic {
+contract VRC20 is VRC20Basic {
   function allowance(address owner, address spender) constant returns (uint256);
   function transferFrom(address from, address to, uint256 value);
   function approve(address spender, uint256 value);

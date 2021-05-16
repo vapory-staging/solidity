@@ -17,7 +17,7 @@
 /**
  * @author Ben Edgington <ben@benjaminion.xyz>
  * @date 2017
- * Tests for the deployed ENS Registry implementation written in LLL
+ * Tests for the deployed VNS Registry implementation written in LLL
  */
 
 #include <string>
@@ -337,7 +337,7 @@ static char const* ensCode = R"DELIMITER(
 
 static unique_ptr<bytes> s_compiledEns;
 
-class LLLENSTestFramework: public LLLExecutionFramework
+class LLLVNSTestFramework: public LLLExecutionFramework
 {
 protected:
 	void deployEns()
@@ -356,8 +356,8 @@ protected:
 
 }
 
-// Test suite for the deployed ENS Registry implementation written in LLL
-BOOST_FIXTURE_TEST_SUITE(LLLENS, LLLENSTestFramework)
+// Test suite for the deployed VNS Registry implementation written in LLL
+BOOST_FIXTURE_TEST_SUITE(LLLVNS, LLLVNSTestFramework)
 
 BOOST_AUTO_TEST_CASE(creation)
 {

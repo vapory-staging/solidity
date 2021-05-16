@@ -2,17 +2,17 @@ pragma solidity ^0.4.11;
 
 
 import './BasicToken.sol';
-import './ERC20.sol';
+import './VRC20.sol';
 
 
 /**
- * @title Standard ERC20 token
+ * @title Standard VRC20 token
  *
  * @dev Implementation of the basic standard token.
  * @dev https://github.com/vaporyco/EIPs/issues/20
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
-contract StandardToken is ERC20, BasicToken {
+contract StandardToken is VRC20, BasicToken {
 
   mapping (address => mapping (address => uint256)) allowed;
 
