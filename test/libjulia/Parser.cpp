@@ -59,7 +59,7 @@ bool parse(string const& _source, ErrorReporter& errorReporter)
 			return (assembly::AsmAnalyzer(
 				analysisInfo,
 				errorReporter,
-				dev::test::Options::get().evmVersion(),
+				dev::test::Options::get().vvmVersion(),
 				boost::none,
 				assembly::AsmFlavour::IULIA
 			)).analyze(*parserResult);

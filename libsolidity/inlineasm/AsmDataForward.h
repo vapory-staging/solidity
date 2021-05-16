@@ -55,8 +55,8 @@ using Statement = boost::variant<ExpressionStatement, Instruction, Label, StackA
 
 enum class AsmFlavour
 {
-	Loose,  // no types, EVM instructions as function, jumps and direct stack manipulations
-	Strict, // no types, EVM instructions as functions, but no jumps and no direct stack manipulations
+	Loose,  // no types, VVM instructions as function, jumps and direct stack manipulations
+	Strict, // no types, VVM instructions as functions, but no jumps and no direct stack manipulations
 	IULIA   // same as Strict mode with types
 };
 

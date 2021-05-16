@@ -25,16 +25,16 @@
 #include <functional>
 #include <memory>
 #include <libdevcore/SHA3.h>
-#include <libevmasm/ControlFlowGraph.h>
-#include <libevmasm/KnownState.h>
-#include <libevmasm/PathGasMeter.h>
+#include <libvvmasm/ControlFlowGraph.h>
+#include <libvvmasm/KnownState.h>
+#include <libvvmasm/PathGasMeter.h>
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/ast/ASTVisitor.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 using namespace dev::solidity;
 
 GasEstimator::ASTGasConsumptionSelfAccumulated GasEstimator::structuralEstimation(
@@ -49,7 +49,7 @@ GasEstimator::ASTGasConsumptionSelfAccumulated GasEstimator::structuralEstimatio
 	for (BasicBlock const& block: cfg.optimisedBlocks())
 	{
 		solAssert(!!block.startState, "");
-		GasMeter meter(block.startState->copy(), m_evmVersion);
+		GasMeter meter(block.startState->copy(), m_vvmVersion);
 		auto const end = _items.begin() + block.end;
 		for (auto iter = _items.begin() + block.begin; iter != end; ++iter)
 			particularCosts[iter->location()] += meter.estimateMax(*iter);
@@ -138,7 +138,7 @@ GasEstimator::GasConsumption GasEstimator::functionalEstimation(
 		using Ids = vector<Id>;
 		Id hashValue = classes.find(u256(FixedHash<4>::Arith(FixedHash<4>(dev::keccak256(_signature)))));
 		Id calldata = classes.find(Instruction::CALLDATALOAD, Ids{classes.find(u256(0))});
-		if (!m_evmVersion.hasBitwiseShifting())
+		if (!m_vvmVersion.hasBitwiseShifting())
 			// div(calldataload(0), 1 << 224) equals to hashValue
 			classes.forceEqual(
 				hashValue,
@@ -160,7 +160,7 @@ GasEstimator::GasConsumption GasEstimator::functionalEstimation(
 		);
 	}
 
-	PathGasMeter meter(_items, m_evmVersion);
+	PathGasMeter meter(_items, m_vvmVersion);
 	return meter.estimateMax(0, state);
 }
 
@@ -183,7 +183,7 @@ GasEstimator::GasConsumption GasEstimator::functionalEstimation(
 	if (parametersSize > 0)
 		state->feedItem(swapInstruction(parametersSize));
 
-	return PathGasMeter(_items, m_evmVersion).estimateMax(_offset, state);
+	return PathGasMeter(_items, m_vvmVersion).estimateMax(_offset, state);
 }
 
 set<ASTNode const*> GasEstimator::finestNodesAtLocation(

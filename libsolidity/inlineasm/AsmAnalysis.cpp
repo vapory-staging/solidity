@@ -564,7 +564,7 @@ void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocatio
 {
 	// We assume that returndatacopy, returndatasize and staticcall are either all available
 	// or all not available.
-	solAssert(m_evmVersion.supportsReturndata() == m_evmVersion.hasStaticCall(), "");
+	solAssert(m_vvmVersion.supportsReturndata() == m_vvmVersion.hasStaticCall(), "");
 
 	if (_instr == solidity::Instruction::CREATE2)
 		m_errorReporter.warning(
@@ -572,7 +572,7 @@ void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocatio
 			"The \"" +
 			boost::to_lower_copy(instructionInfo(_instr).name)
 			+ "\" instruction is not supported by the VM version \"" +
-			"" + m_evmVersion.name() +
+			"" + m_vvmVersion.name() +
 			"\" you are currently compiling for. " +
 			"It will be interpreted as an invalid instruction on this VM."
 		);
@@ -580,28 +580,28 @@ void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocatio
 		_instr == solidity::Instruction::RETURNDATACOPY ||
 		_instr == solidity::Instruction::RETURNDATASIZE ||
 		_instr == solidity::Instruction::STATICCALL
-	) && !m_evmVersion.supportsReturndata())
+	) && !m_vvmVersion.supportsReturndata())
 		m_errorReporter.warning(
 			_location,
 			"The \"" +
 			boost::to_lower_copy(instructionInfo(_instr).name)
 			+ "\" instruction is only available for Byzantium-compatible VMs. " +
 			"You are currently compiling for \"" +
-			m_evmVersion.name() +
+			m_vvmVersion.name() +
 			"\", where it will be interpreted as an invalid instruction."
 		);
 	else if ((
 		_instr == solidity::Instruction::SHL ||
 		_instr == solidity::Instruction::SHR ||
 		_instr == solidity::Instruction::SAR
-	) && !m_evmVersion.hasBitwiseShifting())
+	) && !m_vvmVersion.hasBitwiseShifting())
 		m_errorReporter.warning(
 			_location,
 			"The \"" +
 			boost::to_lower_copy(instructionInfo(_instr).name)
 			+ "\" instruction is only available for Constantinople-compatible VMs. " +
 			"You are currently compiling for \"" +
-			m_evmVersion.name() +
+			m_vvmVersion.name() +
 			"\", where it will be interpreted as an invalid instruction."
 		);
 
@@ -611,7 +611,7 @@ void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocatio
 		m_errorReporter.error(
 			m_errorTypeForLoose ? *m_errorTypeForLoose : Error::Type::Warning,
 			_location,
-			"Jump instructions and labels are low-level EVM features that can lead to "
+			"Jump instructions and labels are low-level VVM features that can lead to "
 			"incorrect stack access. Because of that they are discouraged. "
 			"Please consider using \"switch\", \"if\" or \"for\" statements instead."
 		);

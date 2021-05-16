@@ -24,7 +24,7 @@
 
 #include <libsolidity/inlineasm/AsmData.h>
 
-#include <libevmasm/SemanticInformation.h>
+#include <libvvmasm/SemanticInformation.h>
 
 #include <libdevcore/CommonData.h>
 
@@ -45,7 +45,7 @@ void MovableChecker::operator()(Identifier const& _identifier)
 
 void MovableChecker::operator()(FunctionalInstruction const& _instr)
 {
-	if (!eth::SemanticInformation::movable(_instr.instruction))
+	if (!vap::SemanticInformation::movable(_instr.instruction))
 		m_movable = false;
 	else
 		ASTWalker::operator()(_instr);

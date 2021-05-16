@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(short_type_name)
 {
 	CompilerStack c;
 	c.addSource("a", "contract c { function f() { uint[] memory x; } }");
-	c.setEVMVersion(dev::test::Options::get().evmVersion());
+	c.setVVMVersion(dev::test::Options::get().vvmVersion());
 	c.parseAndAnalyze();
 	map<string, unsigned> sourceIndices;
 	sourceIndices["a"] = 1;
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(short_type_name_ref)
 {
 	CompilerStack c;
 	c.addSource("a", "contract c { function f() { uint[][] memory rows; } }");
-	c.setEVMVersion(dev::test::Options::get().evmVersion());
+	c.setVVMVersion(dev::test::Options::get().vvmVersion());
 	c.parseAndAnalyze();
 	map<string, unsigned> sourceIndices;
 	sourceIndices["a"] = 1;
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(long_type_name_binary_operation)
 {
 	CompilerStack c;
 	c.addSource("a", "contract c { function f() public { uint a = 2 + 3; } }");
-	c.setEVMVersion(dev::test::Options::get().evmVersion());
+	c.setVVMVersion(dev::test::Options::get().vvmVersion());
 	c.parseAndAnalyze();
 	map<string, unsigned> sourceIndices;
 	sourceIndices["a"] = 1;
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(long_type_name_identifier)
 {
 	CompilerStack c;
 	c.addSource("a", "contract c { uint[] a; function f() public { uint[] b = a; } }");
-	c.setEVMVersion(dev::test::Options::get().evmVersion());
+	c.setVVMVersion(dev::test::Options::get().vvmVersion());
 	c.parseAndAnalyze();
 	map<string, unsigned> sourceIndices;
 	sourceIndices["a"] = 1;
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(documentation)
 		"  /** Some comment on fn.*/ function fn() public {}"
 		"}"
 	);
-	c.setEVMVersion(dev::test::Options::get().evmVersion());
+	c.setVVMVersion(dev::test::Options::get().vvmVersion());
 	c.parseAndAnalyze();
 	map<string, unsigned> sourceIndices;
 	sourceIndices["a"] = 0;

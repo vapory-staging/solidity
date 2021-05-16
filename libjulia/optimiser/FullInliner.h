@@ -26,7 +26,7 @@
 #include <libjulia/optimiser/NameDispenser.h>
 #include <libjulia/Exceptions.h>
 
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/SourceLocation.h>
 
 #include <boost/variant.hpp>
 #include <boost/optional.hpp>

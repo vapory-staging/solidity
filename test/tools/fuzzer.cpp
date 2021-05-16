@@ -19,8 +19,8 @@
  */
 
 #include <libdevcore/CommonIO.h>
-#include <libevmasm/Assembly.h>
-#include <libevmasm/ConstantOptimiser.h>
+#include <libvvmasm/Assembly.h>
+#include <libvvmasm/ConstantOptimiser.h>
 #include <libsolc/libsolc.h>
 
 #include <libdevcore/JSON.h>
@@ -32,7 +32,7 @@
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 namespace po = boost::program_options;
 
 namespace
@@ -76,7 +76,7 @@ void testConstantOptimizer()
 			ConstantOptimisationMethod::optimiseConstants(
 				isCreation,
 				runs,
-				EVMVersion{},
+				VVMVersion{},
 				assembly,
 				const_cast<AssemblyItems&>(assembly.items())
 			);

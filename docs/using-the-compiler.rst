@@ -23,10 +23,10 @@ it is also possible to provide path redirects using ``prefix=path`` in the follo
 
 ::
 
-    solc github.com/ethereum/dapp-bin/=/usr/local/lib/dapp-bin/ =/usr/local/lib/fallback file.sol
+    solc github.com/vaporyco/dapp-bin/=/usr/local/lib/dapp-bin/ =/usr/local/lib/fallback file.sol
 
 This essentially instructs the compiler to search for anything starting with
-``github.com/ethereum/dapp-bin/`` under ``/usr/local/lib/dapp-bin`` and if it does not
+``github.com/vaporyco/dapp-bin/`` under ``/usr/local/lib/dapp-bin`` and if it does not
 find the file there, it will look at ``/usr/local/lib/fallback`` (the empty prefix
 always matches). ``solc`` will not read files from the filesystem that lie outside of
 the remapping targets and outside of the directories where explicitly specified source
@@ -106,7 +106,7 @@ Input Description
           // Lower values will optimize more for initial deployment cost, higher values will optimize more for high-frequency usage.
           runs: 200
         },
-        evmVersion: "byzantium", // Version of the EVM to compile for. Affects type checking and code generation. Can be homestead, tangerineWhistle, spuriousDragon, byzantium or constantinople
+        vvmVersion: "byzantium", // Version of the VVM to compile for. Affects type checking and code generation. Can be homestead, tangerineWhistle, spuriousDragon, byzantium or constantinople
         // Metadata settings (optional)
         metadata: {
           // Use only literal content and not URLs (false by default)
@@ -134,33 +134,33 @@ Input Description
         //   userdoc - User documentation (natspec)
         //   metadata - Metadata
         //   ir - New assembly format before desugaring
-        //   evm.assembly - New assembly format after desugaring
-        //   evm.legacyAssembly - Old-style assembly format in JSON
-        //   evm.bytecode.object - Bytecode object
-        //   evm.bytecode.opcodes - Opcodes list
-        //   evm.bytecode.sourceMap - Source mapping (useful for debugging)
-        //   evm.bytecode.linkReferences - Link references (if unlinked object)
-        //   evm.deployedBytecode* - Deployed bytecode (has the same options as evm.bytecode)
-        //   evm.methodIdentifiers - The list of function hashes
-        //   evm.gasEstimates - Function gas estimates
+        //   vvm.assembly - New assembly format after desugaring
+        //   vvm.legacyAssembly - Old-style assembly format in JSON
+        //   vvm.bytecode.object - Bytecode object
+        //   vvm.bytecode.opcodes - Opcodes list
+        //   vvm.bytecode.sourceMap - Source mapping (useful for debugging)
+        //   vvm.bytecode.linkReferences - Link references (if unlinked object)
+        //   vvm.deployedBytecode* - Deployed bytecode (has the same options as vvm.bytecode)
+        //   vvm.methodIdentifiers - The list of function hashes
+        //   vvm.gasEstimates - Function gas estimates
         //   ewasm.wast - eWASM S-expressions format (not supported atm)
         //   ewasm.wasm - eWASM binary format (not supported atm)
         //
-        // Note that using a using `evm`, `evm.bytecode`, `ewasm`, etc. will select every
+        // Note that using a using `vvm`, `vvm.bytecode`, `ewasm`, etc. will select every
         // target part of that output. Additionally, `*` can be used as a wildcard to request everything.
         //
         outputSelection: {
           // Enable the metadata and bytecode outputs of every single contract.
           "*": {
-            "*": [ "metadata", "evm.bytecode" ]
+            "*": [ "metadata", "vvm.bytecode" ]
           },
           // Enable the abi and opcodes output of MyContract defined in file def.
           "def": {
-            "MyContract": [ "abi", "evm.bytecode.opcodes" ]
+            "MyContract": [ "abi", "vvm.bytecode.opcodes" ]
           },
           // Enable the source map output of every single contract.
           "*": {
-            "*": [ "evm.bytecode.sourceMap" ]
+            "*": [ "vvm.bytecode.sourceMap" ]
           },
           // Enable the legacy AST output of every single file.
           "*": {
@@ -215,8 +215,8 @@ Output Description
         "sourceFile.sol": {
           // If the language used has no contract names, this field should equal to an empty string.
           "ContractName": {
-            // The Ethereum Contract ABI. If empty, it is represented as an empty array.
-            // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+            // The Vapory Contract ABI. If empty, it is represented as an empty array.
+            // See https://github.com/vaporyco/wiki/wiki/Vapory-Contract-ABI
             abi: [],
             // See the Metadata Output documentation (serialised JSON string)
             metadata: "{...}",
@@ -226,8 +226,8 @@ Output Description
             devdoc: {},
             // Intermediate representation (string)
             ir: "",
-            // EVM-related outputs
-            evm: {
+            // VVM-related outputs
+            vvm: {
               // Assembly (string)
               assembly: "",
               // Old-style assembly (object)

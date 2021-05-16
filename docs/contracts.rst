@@ -7,7 +7,7 @@ Contracts
 Contracts in Solidity are similar to classes in object-oriented languages. They
 contain persistent data in state variables and functions that can modify these
 variables. Calling a function on a different contract (instance) will perform
-an EVM function call and thus switch the context such that state variables are
+an VVM function call and thus switch the context such that state variables are
 inaccessible.
 
 .. index:: ! contract;creation, constructor
@@ -16,12 +16,12 @@ inaccessible.
 Creating Contracts
 ******************
 
-Contracts can be created "from outside" via Ethereum transactions or from within Solidity contracts.
+Contracts can be created "from outside" via Vapory transactions or from within Solidity contracts.
 
-IDEs, such as `Remix <https://remix.ethereum.org/>`_, make the creation process seamless using UI elements.
+IDEs, such as `Remix <https://remix.vapory.org/>`_, make the creation process seamless using UI elements.
 
-Creating contracts programatically on Ethereum is best done via using the JavaScript API `web3.js <https://github.com/ethereum/web3.js>`_.
-As of today it has a method called `web3.eth.Contract <https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#new-contract>`_
+Creating contracts programatically on Vapory is best done via using the JavaScript API `web3.js <https://github.com/vaporyco/web3.js>`_.
+As of today it has a method called `web3.vap.Contract <https://web3js.readthedocs.io/en/1.0/web3-vap-contract.html#new-contract>`_
 to facilitate contract creation.
 
 When a contract is created, its constructor (a function declared with the
@@ -126,7 +126,7 @@ Visibility and Getters
 **********************
 
 Since Solidity knows two kinds of function calls (internal
-ones that do not create an actual EVM call (also called
+ones that do not create an actual VVM call (also called
 a "message call") and external
 ones that do), there are four types of visibilities for
 functions and state variables.
@@ -350,7 +350,7 @@ inheritable properties of contracts and may be overridden by derived contracts.
 
         // It is important to also provide the
         // `payable` keyword here, otherwise the function will
-        // automatically reject all Ether sent to it.
+        // automatically reject all Vapor sent to it.
         function register() public payable costs(price) {
             registeredAddresses[msg.sender] = true;
         }
@@ -457,7 +457,7 @@ The following statements are considered modifying the state:
 #. :ref:`Emitting events <events>`.
 #. :ref:`Creating other contracts <creating-contracts>`.
 #. Using ``selfdestruct``.
-#. Sending Ether via calls.
+#. Sending Vapor via calls.
 #. Calling any function not marked ``view`` or ``pure``.
 #. Using low-level calls.
 #. Using inline assembly that contains certain opcodes.
@@ -482,7 +482,7 @@ The following statements are considered modifying the state:
   If invalid explicit type conversions are used, state modifications are possible
   even though a ``view`` function was called.
   You can switch the compiler to use ``STATICCALL`` when calling such functions and thus
-  prevent modifications to the state on the level of the EVM by adding
+  prevent modifications to the state on the level of the VVM by adding
   ``pragma experimental "v0.5.0";``
 
 .. warning::
@@ -519,13 +519,13 @@ In addition to the list of state modifying statements explained above, the follo
   If invalid explicit type conversions are used, state modifications are possible
   even though a ``pure`` function was called.
   You can switch the compiler to use ``STATICCALL`` when calling such functions and thus
-  prevent modifications to the state on the level of the EVM by adding
+  prevent modifications to the state on the level of the VVM by adding
   ``pragma experimental "v0.5.0";``
 
 .. warning::
   It is not possible to prevent functions from reading the state at the level
-  of the EVM, it is only possible to prevent them from writing to the state
-  (i.e. only ``view`` can be enforced at the EVM level, ``pure`` can not).
+  of the VVM, it is only possible to prevent them from writing to the state
+  (i.e. only ``view`` can be enforced at the VVM level, ``pure`` can not).
 
 .. warning::
   Before version 0.4.17 the compiler didn't enforce that ``pure`` is not reading the state.
@@ -544,16 +544,16 @@ functions match the given function identifier (or if no data was supplied at
 all).
 
 Furthermore, this function is executed whenever the contract receives plain
-Ether (without data). Additionally, in order to receive Ether, the fallback function
+Vapor (without data). Additionally, in order to receive Vapor, the fallback function
 must be marked ``payable``. If no such function exists, the contract cannot receive
-Ether through regular transactions.
+Vapor through regular transactions.
 
 In the worst case, the fallback function can only rely on 2300 gas being available (for example when send or transfer is used), leaving not much room to perform other operations except basic logging. The following operations will consume more gas than the 2300 gas stipend:
 
 - Writing to storage
 - Creating a contract
 - Calling an external function which consumes a large amount of gas
-- Sending Ether
+- Sending Vapor
 
 Like any function, the fallback function can execute complex operations as long as there is enough gas passed on to it.
 
@@ -562,17 +562,17 @@ Like any function, the fallback function can execute complex operations as long 
     any payload supplied with the call.
 
 .. warning::
-    Contracts that receive Ether directly (without a function call, i.e. using ``send`` or ``transfer``)
+    Contracts that receive Vapor directly (without a function call, i.e. using ``send`` or ``transfer``)
     but do not define a fallback function
-    throw an exception, sending back the Ether (this was different
-    before Solidity v0.4.0). So if you want your contract to receive Ether,
+    throw an exception, sending back the Vapor (this was different
+    before Solidity v0.4.0). So if you want your contract to receive Vapor,
     you have to implement a fallback function.
 
 .. warning::
-    A contract without a payable fallback function can receive Ether as a recipient of a `coinbase transaction` (aka `miner block reward`)
+    A contract without a payable fallback function can receive Vapor as a recipient of a `coinbase transaction` (aka `miner block reward`)
     or as a destination of a ``selfdestruct``.
 
-    A contract cannot react to such Ether transfers and thus also cannot reject them. This is a design choice of the EVM and Solidity cannot work around it.
+    A contract cannot react to such Vapor transfers and thus also cannot reject them. This is a design choice of the VVM and Solidity cannot work around it.
 
     It also means that ``this.balance`` can be higher than the sum of some manual accounting implemented in a contract (i.e. having a counter updated in the fallback function).
 
@@ -583,7 +583,7 @@ Like any function, the fallback function can execute complex operations as long 
     contract Test {
         // This function is called for all messages sent to
         // this contract (there is no other function).
-        // Sending Ether to this contract will cause an exception,
+        // Sending Vapor to this contract will cause an exception,
         // because the fallback function does not have the `payable`
         // modifier.
         function() public { x = 1; }
@@ -591,7 +591,7 @@ Like any function, the fallback function can execute complex operations as long 
     }
 
 
-    // This contract keeps all Ether sent to it with no way
+    // This contract keeps all Vapor sent to it with no way
     // to get it back.
     contract Sink {
         function() public payable { }
@@ -603,10 +603,10 @@ Like any function, the fallback function can execute complex operations as long 
             // results in test.x becoming == 1.
 
             // The following will not compile, but even
-            // if someone sends ether to that contract,
+            // if someone sends vapor to that contract,
             // the transaction will fail and reject the
-            // Ether.
-            //test.send(2 ether);
+            // Vapor.
+            //test.send(2 vapor);
         }
     }
 
@@ -697,7 +697,7 @@ converted to ``uint8``.
 Events
 ******
 
-Events allow the convenient usage of the EVM logging facilities,
+Events allow the convenient usage of the VVM logging facilities,
 which in turn can be used to "call" JavaScript callbacks in the user interface
 of a dapp, which listen for these events.
 
@@ -761,7 +761,7 @@ The use in the JavaScript API would be as follows:
 ::
 
     var abi = /* abi as generated by the compiler */;
-    var ClientReceipt = web3.eth.contract(abi);
+    var ClientReceipt = web3.vap.contract(abi);
     var clientReceipt = ClientReceipt.at("0x1234...ab67" /* address */);
 
     var event = clientReceipt.Deposit();
@@ -814,7 +814,7 @@ where the long hexadecimal number is equal to
 Additional Resources for Understanding Events
 ==============================================
 
-- `Javascript documentation <https://github.com/ethereum/wiki/wiki/JavaScript-API#contract-events>`_
+- `Javascript documentation <https://github.com/vaporyco/wiki/wiki/JavaScript-API#contract-events>`_
 - `Example usage of events <https://github.com/debris/smart-exchange/blob/master/lib/contracts/SmartExchange.sol>`_
 - `How to access them in js <https://github.com/debris/smart-exchange/blob/master/lib/exchange_transactions.js>`_
 
@@ -1190,7 +1190,7 @@ Libraries
 Libraries are similar to contracts, but their purpose is that they are deployed
 only once at a specific address and their code is reused using the ``DELEGATECALL``
 (``CALLCODE`` until Homestead)
-feature of the EVM. This means that if library functions are called, their code
+feature of the VVM. This means that if library functions are called, their code
 is executed in the context of the calling contract, i.e. ``this`` points to the
 calling contract, and especially the storage from the calling contract can be
 accessed. As a library is an isolated piece of source code, it can only access
@@ -1209,7 +1209,7 @@ contracts (``L.f()`` if ``L`` is the name of the library). Furthermore,
 if the library were a base contract. Of course, calls to internal functions
 use the internal calling convention, which means that all internal types
 can be passed and memory types will be passed by reference and not copied.
-To realize this in the EVM, code of internal library functions
+To realize this in the VVM, code of internal library functions
 and all functions called from therein will at compile time be pulled into the calling
 contract, and a regular ``JUMP`` call will be used instead of a ``DELEGATECALL``.
 
@@ -1363,7 +1363,7 @@ Restrictions for libraries in comparison to contracts:
 
 - No state variables
 - Cannot inherit nor be inherited
-- Cannot receive Ether
+- Cannot receive Vapor
 
 (These might be lifted at a later point.)
 
@@ -1374,7 +1374,7 @@ As mentioned in the introduction, if a library's code is executed
 using a ``CALL`` instead of a ``DELEGATECALL`` or ``CALLCODE``,
 it will revert unless a ``view`` or ``pure`` function is called.
 
-The EVM does not provide a direct way for a contract to detect
+The VVM does not provide a direct way for a contract to detect
 whether it was called using ``CALL`` or not, but a contract
 can use the ``ADDRESS`` opcode to find out "where" it is
 currently running. The generated code compares this address
@@ -1505,7 +1505,7 @@ It is also possible to extend elementary types in that way::
         }
     }
 
-Note that all library calls are actual EVM function calls. This means that
+Note that all library calls are actual VVM function calls. This means that
 if you pass memory or value types, a copy will be performed, even of the
 ``self`` variable. The only situation where no copy will be performed
 is when storage reference variables are used.

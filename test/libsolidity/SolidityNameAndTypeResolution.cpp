@@ -977,7 +977,7 @@ BOOST_AUTO_TEST_CASE(private_state_variable)
 
 BOOST_AUTO_TEST_CASE(base_class_state_variable_accessor)
 {
-	// test for issue #1126 https://github.com/ethereum/cpp-ethereum/issues/1126
+	// test for issue #1126 https://github.com/vaporyco/cpp-vapory/issues/1126
 	char const* text = R"(
 		contract Parent {
 			uint256 public m_aMember;
@@ -1485,7 +1485,7 @@ BOOST_AUTO_TEST_CASE(disallow_declaration_of_void_type)
 	CHECK_ERROR(sourceCode, TypeError, "Not enough components (0) in value to assign all variables (1).");
 }
 
-BOOST_AUTO_TEST_CASE(overflow_caused_by_ether_units)
+BOOST_AUTO_TEST_CASE(overflow_caused_by_vapor_units)
 {
 	char const* sourceCodeFine = R"(
 		contract c {
@@ -1499,7 +1499,7 @@ BOOST_AUTO_TEST_CASE(overflow_caused_by_ether_units)
 	char const* sourceCode = R"(
 		contract c {
 			function c () public {
-				 a = 115792089237316195423570985008687907853269984665640564039458 ether;
+				 a = 115792089237316195423570985008687907853269984665640564039458 vapor;
 			}
 			uint256 a;
 		}
@@ -2834,7 +2834,7 @@ BOOST_AUTO_TEST_CASE(dynamic_return_types_not_possible)
 			}
 		}
 	)";
-	if (dev::test::Options::get().evmVersion() == EVMVersion::homestead())
+	if (dev::test::Options::get().vvmVersion() == VVMVersion::homestead())
 		CHECK_ERROR(sourceCode, TypeError, "Explicit type conversion not allowed from \"inaccessible dynamic type\" to \"bytes storage pointer\".");
 	else
 		CHECK_WARNING(sourceCode, "Use of the \"var\" keyword is deprecated");
@@ -4769,7 +4769,7 @@ BOOST_AUTO_TEST_CASE(illegal_override_payable_nonpayable)
 
 BOOST_AUTO_TEST_CASE(function_variable_mixin)
 {
-       // bug #1798 (cpp-ethereum), related to #1286 (solidity)
+       // bug #1798 (cpp-vapory), related to #1286 (solidity)
        char const* text = R"(
                contract attribute {
                        bool ok = false;
@@ -6172,7 +6172,7 @@ BOOST_AUTO_TEST_CASE(returndatasize_as_variable)
 		{Error::Type::Warning, "The use of non-functional instructions is deprecated."},
 		{Error::Type::DeclarationError, "Unbalanced stack"}
 	});
-	if (!dev::test::Options::get().evmVersion().supportsReturndata())
+	if (!dev::test::Options::get().vvmVersion().supportsReturndata())
 		expectations.emplace_back(make_pair(Error::Type::Warning, std::string("\"returndatasize\" instruction is only available for Byzantium-compatible")));
 	CHECK_ALLOW_MULTI(text, expectations);
 }

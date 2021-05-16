@@ -22,7 +22,7 @@
 
 #include <ctype.h>
 #include <vector>
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/SourceLocation.h>
 #include <libsolidity/parsing/Parser.h>
 #include <libsolidity/parsing/Scanner.h>
 #include <libsolidity/inlineasm/AsmParser.h>
@@ -954,8 +954,8 @@ ASTPointer<InlineAssembly> Parser::parseInlineAssembly(ASTPointer<ASTString> con
 	expectToken(Token::Assembly);
 	if (m_scanner->currentToken() == Token::StringLiteral)
 	{
-		if (m_scanner->currentLiteral() != "evmasm")
-			fatalParserError("Only \"evmasm\" supported.");
+		if (m_scanner->currentLiteral() != "vvmasm")
+			fatalParserError("Only \"vvmasm\" supported.");
 		m_scanner->next();
 	}
 
@@ -1439,7 +1439,7 @@ ASTPointer<Expression> Parser::parsePrimaryExpression()
 		expression = nodeFactory.createNode<Literal>(token, getLiteralAndAdvance());
 		break;
 	case Token::Number:
-		if (Token::isEtherSubdenomination(m_scanner->peekNextToken()))
+		if (Token::isVaporSubdenomination(m_scanner->peekNextToken()))
 		{
 			ASTPointer<ASTString> literal = getLiteralAndAdvance();
 			nodeFactory.markEndPosition();

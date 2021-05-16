@@ -26,9 +26,9 @@
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 
-bytes dev::eth::compileLLL(string const& _src, dev::solidity::EVMVersion _evmVersion, bool _opt, std::vector<std::string>* _errors, dev::eth::ReadCallback const& _readFile)
+bytes dev::vap::compileLLL(string const& _src, dev::solidity::VVMVersion _vvmVersion, bool _opt, std::vector<std::string>* _errors, dev::vap::ReadCallback const& _readFile)
 {
 	try
 	{
@@ -36,7 +36,7 @@ bytes dev::eth::compileLLL(string const& _src, dev::solidity::EVMVersion _evmVer
 		cs.populateStandard();
 		auto assembly = CodeFragment::compile(_src, cs, _readFile).assembly(cs);
 		if (_opt)
-			assembly = assembly.optimise(true, _evmVersion);
+			assembly = assembly.optimise(true, _vvmVersion);
 		bytes ret = assembly.assemble().bytecode;
 		for (auto i: cs.treesToKill)
 			killBigints(i);
@@ -66,7 +66,7 @@ bytes dev::eth::compileLLL(string const& _src, dev::solidity::EVMVersion _evmVer
 	return bytes();
 }
 
-std::string dev::eth::compileLLLToAsm(std::string const& _src, EVMVersion _evmVersion, bool _opt, std::vector<std::string>* _errors, ReadCallback const& _readFile)
+std::string dev::vap::compileLLLToAsm(std::string const& _src, VVMVersion _vvmVersion, bool _opt, std::vector<std::string>* _errors, ReadCallback const& _readFile)
 {
 	try
 	{
@@ -74,7 +74,7 @@ std::string dev::eth::compileLLLToAsm(std::string const& _src, EVMVersion _evmVe
 		cs.populateStandard();
 		auto assembly = CodeFragment::compile(_src, cs, _readFile).assembly(cs);
 		if (_opt)
-			assembly = assembly.optimise(true, _evmVersion);
+			assembly = assembly.optimise(true, _vvmVersion);
 		string ret = assembly.assemblyString();
 		for (auto i: cs.treesToKill)
 			killBigints(i);
@@ -103,7 +103,7 @@ std::string dev::eth::compileLLLToAsm(std::string const& _src, EVMVersion _evmVe
 	return string();
 }
 
-string dev::eth::parseLLL(string const& _src)
+string dev::vap::parseLLL(string const& _src)
 {
 	sp::utree o;
 

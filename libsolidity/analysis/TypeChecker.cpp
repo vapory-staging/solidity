@@ -981,7 +981,7 @@ bool TypeChecker::visit(InlineAssembly const& _inlineAssembly)
 	assembly::AsmAnalyzer analyzer(
 		*_inlineAssembly.annotation().analysisInfo,
 		m_errorReporter,
-		m_evmVersion,
+		m_vvmVersion,
 		errorTypeForLoose,
 		assembly::AsmFlavour::Loose,
 		identifierAccess
@@ -1687,7 +1687,7 @@ bool TypeChecker::visit(FunctionCall const& _functionCall)
 			_functionCall.expression().annotation().isPure &&
 			functionType->isPure();
 
-	bool allowDynamicTypes = m_evmVersion.supportsReturndata();
+	bool allowDynamicTypes = m_vvmVersion.supportsReturndata();
 	if (!functionType)
 	{
 		m_errorReporter.typeError(_functionCall.location(), "Type is not callable");

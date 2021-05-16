@@ -278,10 +278,10 @@ bool ReferencesResolver::visit(InlineAssembly const& _inlineAssembly)
 	};
 
 	// Will be re-generated later with correct information
-	// We use the latest EVM version because we will re-run it anyway.
+	// We use the latest VVM version because we will re-run it anyway.
 	assembly::AsmAnalysisInfo analysisInfo;
 	boost::optional<Error::Type> errorTypeForLoose = m_experimental050Mode ? Error::Type::SyntaxError : Error::Type::Warning;
-	assembly::AsmAnalyzer(analysisInfo, errorsIgnored, EVMVersion(), errorTypeForLoose, assembly::AsmFlavour::Loose, resolver).analyze(_inlineAssembly.operations());
+	assembly::AsmAnalyzer(analysisInfo, errorsIgnored, VVMVersion(), errorTypeForLoose, assembly::AsmFlavour::Loose, resolver).analyze(_inlineAssembly.operations());
 	return false;
 }
 

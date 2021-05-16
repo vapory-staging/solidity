@@ -27,7 +27,7 @@
 
 #include <libsolidity/inlineasm/AsmData.h>
 
-#include <libevmasm/RuleList.h>
+#include <libvvmasm/RuleList.h>
 
 using namespace std;
 using namespace dev;

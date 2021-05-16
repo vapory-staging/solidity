@@ -132,7 +132,7 @@ bytes compileFirstExpression(
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
 			ErrorReporter errorReporter(errors);
-			TypeChecker typeChecker(dev::test::Options::get().evmVersion(), errorReporter);
+			TypeChecker typeChecker(dev::test::Options::get().vvmVersion(), errorReporter);
 			BOOST_REQUIRE(typeChecker.checkTypeRequirements(*contract));
 		}
 	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
@@ -141,7 +141,7 @@ bytes compileFirstExpression(
 			FirstExpressionExtractor extractor(*contract);
 			BOOST_REQUIRE(extractor.expression() != nullptr);
 
-			CompilerContext context(dev::test::Options::get().evmVersion());
+			CompilerContext context(dev::test::Options::get().vvmVersion());
 			context.resetVisitedNodes(contract);
 			context.setInheritanceHierarchy(inheritanceHierarchy);
 			unsigned parametersSize = _localVariables.size(); // assume they are all one slot on the stack
@@ -160,7 +160,7 @@ bytes compileFirstExpression(
 				));
 			bytes instructions = context.assembledObject().bytecode;
 			// debug
-			// cout << eth::disassemble(instructions) << endl;
+			// cout << vap::disassemble(instructions) << endl;
 			return instructions;
 		}
 	BOOST_FAIL("No contract found in source.");
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(int_literal)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_wei_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_wei_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(int_with_wei_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_szabo_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_szabo_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(int_with_szabo_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_finney_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_finney_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -256,12 +256,12 @@ BOOST_AUTO_TEST_CASE(int_with_finney_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_ether_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_vapor_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
 			function test () {
-				 var x = 1 ether;
+				 var x = 1 vapor;
 			}
 		}
 	)";
@@ -508,9 +508,9 @@ BOOST_AUTO_TEST_CASE(blockhash)
 		}
 	)";
 
-	auto blockhashFun = make_shared<FunctionType>(strings{"uint256"}, strings{"bytes32"}, 
+	auto blockhashFun = make_shared<FunctionType>(strings{"uint256"}, strings{"bytes32"},
 		FunctionType::Kind::BlockHash, false, StateMutability::View);
-	
+
 	bytes code = compileFirstExpression(sourceCode, {}, {}, {make_shared<MagicVariableDeclaration>("blockhash", blockhashFun)});
 
 	bytes expectation({byte(Instruction::PUSH1), 0x03,

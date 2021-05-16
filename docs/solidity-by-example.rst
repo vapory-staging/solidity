@@ -89,9 +89,9 @@ of votes.
         function giveRightToVote(address voter) public {
             // If the first argument of `require` evaluates
             // to `false`, execution terminates and all
-            // changes to the state and to Ether balances
-            // are reverted. 
-            // This used to consume all gas in old EVM versions, but
+            // changes to the state and to Vapor balances
+            // are reverted.
+            // This used to consume all gas in old VVM versions, but
             // not anymore.
             // It is often a good idea to use `require` to check if
             // functions are called correctly.
@@ -200,7 +200,7 @@ Blind Auction
 *************
 
 In this section, we will show how easy it is to create a
-completely blind auction contract on Ethereum.
+completely blind auction contract on Vapory.
 We will start with an open auction where everyone
 can see the bids that are made and then extend this
 contract into a blind auction where it is not
@@ -215,7 +215,7 @@ Simple Open Auction
 The general idea of the following simple auction contract
 is that everyone can send their bids during
 a bidding period. The bids already include sending
-money / ether in order to bind the bidders to their
+money / vapor in order to bind the bidders to their
 bid. If the highest bid is raised, the previously
 highest bidder gets her money back.
 After the end of the bidding period, the
@@ -273,7 +273,7 @@ activate themselves.
             // information is already part of
             // the transaction. The keyword payable
             // is required for the function to
-            // be able to receive Ether.
+            // be able to receive Vapor.
 
             // Revert the call if the bidding
             // period is over.
@@ -324,14 +324,14 @@ activate themselves.
         /// to the beneficiary.
         function auctionEnd() public {
             // It is a good guideline to structure functions that interact
-            // with other contracts (i.e. they call functions or send Ether)
+            // with other contracts (i.e. they call functions or send Vapor)
             // into three phases:
             // 1. checking conditions
             // 2. performing actions (potentially changing conditions)
             // 3. interacting with other contracts
             // If these phases are mixed up, the other contract could call
             // back into the current contract and modify the state or cause
-            // effects (ether payout) to be performed multiple times.
+            // effects (vapor payout) to be performed multiple times.
             // If functions called internally include interaction with external
             // contracts, they also have to be considered interaction with
             // external contracts.
@@ -374,7 +374,7 @@ Another challenge is how to make the auction
 prevent the bidder from just not sending the money
 after he won the auction is to make her send it
 together with the bid. Since value transfers cannot
-be blinded in Ethereum, anyone can see the value.
+be blinded in Vapory, anyone can see the value.
 
 The following contract solves this problem by
 accepting any value that is larger than the highest
@@ -430,9 +430,9 @@ high or low invalid bids.
 
         /// Place a blinded bid with `_blindedBid` = keccak256(value,
         /// fake, secret).
-        /// The sent ether is only refunded if the bid is correctly
+        /// The sent vapor is only refunded if the bid is correctly
         /// revealed in the revealing phase. The bid is valid if the
-        /// ether sent together with the bid is at least "value" and
+        /// vapor sent together with the bid is at least "value" and
         /// "fake" is not true. Setting "fake" to true and sending
         /// not the exact amount are ways to hide the real bid but
         /// still make the required deposit. The same address can
@@ -592,7 +592,7 @@ Safe Remote Purchase
         event PurchaseConfirmed();
         event ItemReceived();
 
-        /// Abort the purchase and reclaim the ether.
+        /// Abort the purchase and reclaim the vapor.
         /// Can only be called by the seller before
         /// the contract is locked.
         function abort()
@@ -606,8 +606,8 @@ Safe Remote Purchase
         }
 
         /// Confirm the purchase as buyer.
-        /// Transaction has to include `2 * value` ether.
-        /// The ether will be locked until confirmReceived
+        /// Transaction has to include `2 * value` vapor.
+        /// The vapor will be locked until confirmReceived
         /// is called.
         function confirmPurchase()
             public
@@ -621,7 +621,7 @@ Safe Remote Purchase
         }
 
         /// Confirm that you (the buyer) received the item.
-        /// This will release the locked ether.
+        /// This will release the locked vapor.
         function confirmReceived()
             public
             onlyBuyer

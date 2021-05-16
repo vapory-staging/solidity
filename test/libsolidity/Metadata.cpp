@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(metadata_stamp)
 	)";
 	CompilerStack compilerStack;
 	compilerStack.addSource("", std::string(sourceCode));
-	compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+	compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 	compilerStack.setOptimiserSettings(dev::test::Options::get().optimize);
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 	bytes const& bytecode = compilerStack.runtimeObject("test").bytecode;
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(metadata_stamp_experimental)
 	)";
 	CompilerStack compilerStack;
 	compilerStack.addSource("", std::string(sourceCode));
-	compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+	compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 	compilerStack.setOptimiserSettings(dev::test::Options::get().optimize);
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 	bytes const& bytecode = compilerStack.runtimeObject("test").bytecode;
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(metadata_relevant_sources)
 		}
 	)";
 	compilerStack.addSource("B", std::string(sourceCode));
-	compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+	compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 	compilerStack.setOptimiserSettings(dev::test::Options::get().optimize);
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(metadata_relevant_sources_imports)
 		}
 	)";
 	compilerStack.addSource("C", std::string(sourceCode));
-	compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+	compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 	compilerStack.setOptimiserSettings(dev::test::Options::get().optimize);
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 

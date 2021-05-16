@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(no_move_with_side_effects)
 	);
 }
 
-BOOST_AUTO_TEST_CASE(complex_with_evm)
+BOOST_AUTO_TEST_CASE(complex_with_vvm)
 {
 	BOOST_CHECK_EQUAL(
 		inlineFunctions("{ function f(a) -> x { x := add(a, a) } let y := f(calldatasize()) }", false),

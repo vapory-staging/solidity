@@ -84,7 +84,7 @@ bool SyntaxTest::run(ostream& _stream, string const& _linePrefix, bool const _fo
 	string const versionPragma = "pragma solidity >=0.0;\n";
 	m_compiler.reset();
 	m_compiler.addSource("", versionPragma + m_source);
-	m_compiler.setEVMVersion(dev::test::Options::get().evmVersion());
+	m_compiler.setVVMVersion(dev::test::Options::get().vvmVersion());
 
 	if (m_compiler.parse())
 		m_compiler.analyze();

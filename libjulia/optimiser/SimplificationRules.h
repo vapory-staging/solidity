@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <libevmasm/ExpressionClasses.h>
-#include <libevmasm/SimplificationRule.h>
+#include <libvvmasm/ExpressionClasses.h>
+#include <libvvmasm/SimplificationRule.h>
 
 #include <libjulia/ASTDataForward.h>
 

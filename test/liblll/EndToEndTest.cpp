@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE(send_two_args)
 {
 	// "send" does not retain enough gas to be able to pay for account creation.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -604,7 +604,7 @@ BOOST_AUTO_TEST_CASE(send_three_args)
 {
 	// "send" does not retain enough gas to be able to pay for account creation.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -723,7 +723,7 @@ BOOST_AUTO_TEST_CASE(msg_three_args)
 {
 	// "msg" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -741,7 +741,7 @@ BOOST_AUTO_TEST_CASE(msg_two_args)
 {
 	// "msg" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -759,7 +759,7 @@ BOOST_AUTO_TEST_CASE(create_one_arg)
 {
 	// "call" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -778,7 +778,7 @@ BOOST_AUTO_TEST_CASE(create_two_args)
 {
 	// "call" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -857,7 +857,7 @@ BOOST_AUTO_TEST_CASE(ecrecover)
 {
 	// "ecrecover" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -881,7 +881,7 @@ BOOST_AUTO_TEST_CASE(sha256_two_args)
 {
 	// "sha256" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -901,7 +901,7 @@ BOOST_AUTO_TEST_CASE(ripemd160_two_args)
 {
 	// "ripemd160" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -921,7 +921,7 @@ BOOST_AUTO_TEST_CASE(sha256_one_arg)
 {
 	// "sha256" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -939,7 +939,7 @@ BOOST_AUTO_TEST_CASE(ripemd160_one_arg)
 {
 	// "ripemd160" does not retain enough gas.
 	// Disabling for non-tangerineWhistle VMs.
-	if (dev::test::Options::get().evmVersion().canOverchargeGasForCall())
+	if (dev::test::Options::get().vvmVersion().canOverchargeGasForCall())
 	{
 		char const* sourceCode = R"(
 			(returnlll
@@ -953,11 +953,11 @@ BOOST_AUTO_TEST_CASE(ripemd160_one_arg)
 	}
 }
 
-BOOST_AUTO_TEST_CASE(wei_szabo_finney_ether)
+BOOST_AUTO_TEST_CASE(wei_szabo_finney_vapor)
 {
 	char const* sourceCode = R"(
 		(returnlll
-			(return (+ wei (+ szabo (+ finney ether)))))
+			(return (+ wei (+ szabo (+ finney vapor)))))
 	)";
 	compileAndRun(sourceCode);
 	BOOST_CHECK(callFallback() == encodeArgs(u256(1001001000000000001)));

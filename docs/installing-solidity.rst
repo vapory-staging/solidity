@@ -20,9 +20,9 @@ Remix
 
 *We recommend Remix for small contracts and for quickly learning Solidity.*
 
-`Access Remix online <https://remix.ethereum.org/>`_, you don't need to install anything.
+`Access Remix online <https://remix.vapory.org/>`_, you don't need to install anything.
 If you want to use it without connection to the Internet, go to
-https://github.com/ethereum/browser-solidity/tree/gh-pages and download the .ZIP file as
+https://github.com/vaporyco/browser-solidity/tree/gh-pages and download the .ZIP file as
 explained on that page.
 
 Further options on this page detail installing commandline Solidity compiler software
@@ -35,10 +35,10 @@ npm / Node.js
 =============
 
 Use `npm` for a convenient and portable way to install `solcjs`, a Solidity compiler. The
-`solcjs` program has fewer features than all options further down this page. Our 
+`solcjs` program has fewer features than all options further down this page. Our
 :ref:`commandline-compiler` documentation assumes you are using
 the full-featured compiler, `solc`. So if you install `solcjs` from `npm` then you will
-stop reading the documentation here and then continue to `solc-js <https://github.com/ethereum/solc-js>`_.
+stop reading the documentation here and then continue to `solc-js <https://github.com/vaporyco/solc-js>`_.
 
 Note: The solc-js project is derived from the C++
 `solc` by using Emscripten. `solc-js` can be used in JavaScript projects directly (such as Remix).
@@ -52,7 +52,7 @@ Please refer to the solc-js repository for instructions.
 
     The commandline is named `solcjs`.
 
-    The comandline options of `solcjs` are not compatible with `solc` and tools (such as `geth`)
+    The comandline options of `solcjs` are not compatible with `solc` and tools (such as `gvap`)
     expecting the behaviour of `solc` will not work with `solcjs`.
 
 Docker
@@ -64,7 +64,7 @@ repository contains potentially unstable changes in the develop branch.
 
 .. code:: bash
 
-    docker run ethereum/solc:stable solc --version
+    docker run vapory/solc:stable solc --version
 
 Currently, the docker image only contains the compiler executable,
 so you have to do some additional work to link in the source and
@@ -74,13 +74,13 @@ Binary Packages
 ===============
 
 Binary packages of Solidity are available at
-`solidity/releases <https://github.com/ethereum/solidity/releases>`_.
+`solidity/releases <https://github.com/vaporyco/solidity/releases>`_.
 
 We also have PPAs for Ubuntu.  For the latest stable version.
 
 .. code:: bash
 
-    sudo add-apt-repository ppa:ethereum/ethereum
+    sudo add-apt-repository ppa:vapory/vapory
     sudo apt-get update
     sudo apt-get install solc
 
@@ -88,11 +88,11 @@ If you want to use the cutting edge developer version:
 
 .. code:: bash
 
-    sudo add-apt-repository ppa:ethereum/ethereum
-    sudo add-apt-repository ppa:ethereum/ethereum-dev
+    sudo add-apt-repository ppa:vapory/vapory
+    sudo add-apt-repository ppa:vapory/vapory-dev
     sudo apt-get update
     sudo apt-get install solc
-    
+
 We are also releasing a `snap package <https://snapcraft.io/>`_, which is installable in all the `supported Linux distros <https://snapcraft.io/docs/core/install>`_. To install the latest stable version of solc:
 
 .. code:: bash
@@ -120,16 +120,16 @@ We will re-add the pre-built bottles soon.
 
     brew update
     brew upgrade
-    brew tap ethereum/ethereum
+    brew tap vapory/vapory
     brew install solidity
 
-If you need a specific version of Solidity you can install a 
+If you need a specific version of Solidity you can install a
 Homebrew formula directly from Github.
 
-View 
-`solidity.rb commits on Github <https://github.com/ethereum/homebrew-ethereum/commits/master/solidity.rb>`_.
+View
+`solidity.rb commits on Github <https://github.com/vaporyco/homebrew-vapory/commits/master/solidity.rb>`_.
 
-Follow the history links until you have a raw file link of a 
+Follow the history links until you have a raw file link of a
 specific commit of ``solidity.rb``.
 
 Install it using ``brew``:
@@ -138,7 +138,7 @@ Install it using ``brew``:
 
     brew unlink solidity
     # Install 0.4.8
-    brew install https://raw.githubusercontent.com/ethereum/homebrew-ethereum/77cce03da9f289e5a3ffe579840d3c5dc0a62717/solidity.rb
+    brew install https://raw.githubusercontent.com/vapory/homebrew-vapory/77cce03da9f289e5a3ffe579840d3c5dc0a62717/solidity.rb
 
 Gentoo Linux also provides a solidity package that can be installed using ``emerge``:
 
@@ -158,7 +158,7 @@ To clone the source code, execute the following command:
 
 .. code:: bash
 
-    git clone --recursive https://github.com/ethereum/solidity.git
+    git clone --recursive https://github.com/vaporyco/solidity.git
     cd solidity
 
 If you want to help developing Solidity,
@@ -272,7 +272,7 @@ Building Solidity is quite similar on Linux, macOS and other Unices:
 or even easier:
 
 .. code:: bash
-    
+
     #note: this will install binaries solc and soltest at usr/local/bin
     ./scripts/build.sh
 

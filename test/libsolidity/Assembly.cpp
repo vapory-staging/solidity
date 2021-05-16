@@ -17,13 +17,13 @@
 /**
  * @author Lefteris Karapetsas <lefteris@ethdev.com>
  * @date 2015
- * Unit tests for Assembly Items from evmasm/Assembly.h
+ * Unit tests for Assembly Items from vvmasm/Assembly.h
  */
 
 #include <test/Options.h>
 
-#include <libevmasm/SourceLocation.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/SourceLocation.h>
+#include <libvvmasm/Assembly.h>
 
 #include <libsolidity/parsing/Scanner.h>
 #include <libsolidity/parsing/Parser.h>
@@ -39,7 +39,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 
 namespace dev
 {
@@ -51,7 +51,7 @@ namespace test
 namespace
 {
 
-eth::AssemblyItems compileContract(string const& _sourceCode)
+vap::AssemblyItems compileContract(string const& _sourceCode)
 {
 	ErrorList errors;
 	ErrorReporter errorReporter(errors);
@@ -74,7 +74,7 @@ eth::AssemblyItems compileContract(string const& _sourceCode)
 	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
-			TypeChecker checker(dev::test::Options::get().evmVersion(), errorReporter);
+			TypeChecker checker(dev::test::Options::get().vvmVersion(), errorReporter);
 			BOOST_REQUIRE_NO_THROW(checker.checkTypeRequirements(*contract));
 			if (!Error::containsOnlyWarnings(errorReporter.errors()))
 				return AssemblyItems();
@@ -82,7 +82,7 @@ eth::AssemblyItems compileContract(string const& _sourceCode)
 	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
-			Compiler compiler(dev::test::Options::get().evmVersion());
+			Compiler compiler(dev::test::Options::get().vvmVersion());
 			compiler.compileContract(*contract, map<ContractDefinition const*, Assembly const*>{}, bytes());
 
 			return compiler.runtimeAssemblyItems();
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(location_test)
 	}
 	)";
 	AssemblyItems items = compileContract(sourceCode);
-	bool hasShifts = dev::test::Options::get().evmVersion().hasBitwiseShifting();
+	bool hasShifts = dev::test::Options::get().vvmVersion().hasBitwiseShifting();
 	vector<SourceLocation> locations =
 		vector<SourceLocation>(hasShifts ? 23 : 24, SourceLocation(2, 75, make_shared<string>(""))) +
 		vector<SourceLocation>(2, SourceLocation(20, 72, make_shared<string>(""))) +

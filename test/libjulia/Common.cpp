@@ -66,7 +66,7 @@ pair<shared_ptr<Block>, shared_ptr<assembly::AsmAnalysisInfo>> dev::julia::test:
 		assembly::AsmAnalyzer analyzer(
 			*analysisInfo,
 			errorReporter,
-			dev::test::Options::get().evmVersion(),
+			dev::test::Options::get().vvmVersion(),
 			boost::none,
 			flavour
 		);

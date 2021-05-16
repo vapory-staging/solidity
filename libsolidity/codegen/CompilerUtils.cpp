@@ -27,7 +27,7 @@
 #include <libsolidity/codegen/LValue.h>
 #include <libsolidity/codegen/ABIFunctions.h>
 
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 
 #include <libdevcore/Whiskers.h>
 
@@ -1264,7 +1264,7 @@ void CompilerUtils::cleanHigherOrderBits(IntegerType const& _typeOnStack)
 void CompilerUtils::leftShiftNumberOnStack(unsigned _bits)
 {
 	solAssert(_bits < 256, "");
-	if (m_context.evmVersion().hasBitwiseShifting())
+	if (m_context.vvmVersion().hasBitwiseShifting())
 		m_context << _bits << Instruction::SHL;
 	else
 		m_context << (u256(1) << _bits) << Instruction::MUL;
@@ -1274,7 +1274,7 @@ void CompilerUtils::rightShiftNumberOnStack(unsigned _bits)
 {
 	solAssert(_bits < 256, "");
 	// NOTE: If we add signed right shift, SAR rounds differently than SDIV
-	if (m_context.evmVersion().hasBitwiseShifting())
+	if (m_context.vvmVersion().hasBitwiseShifting())
 		m_context << _bits << Instruction::SHR;
 	else
 		m_context << (u256(1) << _bits) << Instruction::SWAP1 << Instruction::DIV;

@@ -17,15 +17,15 @@
 /**
  * @author Christian <c@ethdev.com>
  * @date 2014
- * Solidity AST to EVM bytecode compiler.
+ * Solidity AST to VVM bytecode compiler.
  */
 
 #pragma once
 
 #include <libsolidity/codegen/CompilerContext.h>
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
 #include <ostream>
 #include <functional>
@@ -36,32 +36,32 @@ namespace solidity {
 class Compiler
 {
 public:
-	explicit Compiler(EVMVersion _evmVersion = EVMVersion{}, bool _optimize = false, unsigned _runs = 200):
+	explicit Compiler(VVMVersion _vvmVersion = VVMVersion{}, bool _optimize = false, unsigned _runs = 200):
 		m_optimize(_optimize),
 		m_optimizeRuns(_runs),
-		m_runtimeContext(_evmVersion),
-		m_context(_evmVersion, &m_runtimeContext)
+		m_runtimeContext(_vvmVersion),
+		m_context(_vvmVersion, &m_runtimeContext)
 	{ }
 
 	/// Compiles a contract.
 	/// @arg _metadata contains the to be injected metadata CBOR
 	void compileContract(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts,
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _contracts,
 		bytes const& _metadata
 	);
 	/// Compiles a contract that uses DELEGATECALL to call into a pre-deployed version of the given
 	/// contract at runtime, but contains the full creation-time code.
 	void compileClone(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 	);
 	/// @returns Entire assembly.
-	eth::Assembly const& assembly() const { return m_context.assembly(); }
+	vap::Assembly const& assembly() const { return m_context.assembly(); }
 	/// @returns The entire assembled object (with constructor).
-	eth::LinkerObject assembledObject() const { return m_context.assembledObject(); }
+	vap::LinkerObject assembledObject() const { return m_context.assembledObject(); }
 	/// @returns Only the runtime object (without constructor).
-	eth::LinkerObject runtimeObject() const { return m_context.assembledRuntimeObject(m_runtimeSub); }
+	vap::LinkerObject runtimeObject() const { return m_context.assembledRuntimeObject(m_runtimeSub); }
 	/// @arg _sourceCodes is the map of input files to source code strings
 	std::string assemblyString(StringMap const& _sourceCodes = StringMap()) const
 	{
@@ -73,13 +73,13 @@ public:
 		return m_context.assemblyJSON(_sourceCodes);
 	}
 	/// @returns Assembly items of the normal compiler context
-	eth::AssemblyItems const& assemblyItems() const { return m_context.assembly().items(); }
+	vap::AssemblyItems const& assemblyItems() const { return m_context.assembly().items(); }
 	/// @returns Assembly items of the runtime compiler context
-	eth::AssemblyItems const& runtimeAssemblyItems() const { return m_context.assembly().sub(m_runtimeSub).items(); }
+	vap::AssemblyItems const& runtimeAssemblyItems() const { return m_context.assembly().sub(m_runtimeSub).items(); }
 
 	/// @returns the entry label of the given function. Might return an AssemblyItem of type
 	/// UndefinedItem if it does not exist yet.
-	eth::AssemblyItem functionEntryLabel(FunctionDefinition const& _function) const;
+	vap::AssemblyItem functionEntryLabel(FunctionDefinition const& _function) const;
 
 private:
 	bool const m_optimize;

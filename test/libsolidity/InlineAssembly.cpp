@@ -27,7 +27,7 @@
 #include <libsolidity/interface/Exceptions.h>
 #include <libsolidity/ast/AST.h>
 #include <test/libsolidity/ErrorCheck.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -52,10 +52,10 @@ boost::optional<Error> parseAndReturnFirstError(
 	bool _assemble = false,
 	bool _allowWarnings = true,
 	AssemblyStack::Language _language = AssemblyStack::Language::Assembly,
-	AssemblyStack::Machine _machine = AssemblyStack::Machine::EVM
+	AssemblyStack::Machine _machine = AssemblyStack::Machine::VVM
 )
 {
-	AssemblyStack stack(dev::test::Options::get().evmVersion(), _language);
+	AssemblyStack stack(dev::test::Options::get().vvmVersion(), _language);
 	bool success = false;
 	try
 	{
@@ -89,7 +89,7 @@ bool successParse(
 	bool _assemble = false,
 	bool _allowWarnings = true,
 	AssemblyStack::Language _language = AssemblyStack::Language::Assembly,
-	AssemblyStack::Machine _machine = AssemblyStack::Machine::EVM
+	AssemblyStack::Machine _machine = AssemblyStack::Machine::VVM
 )
 {
 	return !parseAndReturnFirstError(_source, _assemble, _allowWarnings, _language, _machine);
@@ -98,8 +98,8 @@ bool successParse(
 bool successAssemble(string const& _source, bool _allowWarnings = true, AssemblyStack::Language _language = AssemblyStack::Language::Assembly)
 {
 	return
-		successParse(_source, true, _allowWarnings, _language, AssemblyStack::Machine::EVM) &&
-		successParse(_source, true, _allowWarnings, _language, AssemblyStack::Machine::EVM15);
+		successParse(_source, true, _allowWarnings, _language, AssemblyStack::Machine::VVM) &&
+		successParse(_source, true, _allowWarnings, _language, AssemblyStack::Machine::VVM15);
 }
 
 Error expectError(
@@ -117,7 +117,7 @@ Error expectError(
 
 void parsePrintCompare(string const& _source, bool _canWarn = false)
 {
-	AssemblyStack stack(dev::test::Options::get().evmVersion());
+	AssemblyStack stack(dev::test::Options::get().vvmVersion());
 	BOOST_REQUIRE(stack.parseAndAnalyze("", _source));
 	if (_canWarn)
 		BOOST_REQUIRE(Error::containsOnlyWarnings(stack.errors()));
@@ -567,7 +567,7 @@ BOOST_AUTO_TEST_CASE(print_string_literal_unicode)
 {
 	string source = "{ let x := \"\\u1bac\" }";
 	string parsed = "{\n    let x := \"\\xe1\\xae\\xac\"\n}";
-	AssemblyStack stack(dev::test::Options::get().evmVersion());
+	AssemblyStack stack(dev::test::Options::get().vvmVersion());
 	BOOST_REQUIRE(stack.parseAndAnalyze("", source));
 	BOOST_REQUIRE(stack.errors().empty());
 	BOOST_CHECK_EQUAL(stack.print(), parsed);
@@ -783,7 +783,7 @@ BOOST_AUTO_TEST_CASE(shift)
 
 BOOST_AUTO_TEST_CASE(shift_constantinople_warning)
 {
-	if (dev::test::Options::get().evmVersion().hasBitwiseShifting())
+	if (dev::test::Options::get().vvmVersion().hasBitwiseShifting())
 		return;
 	CHECK_PARSE_WARNING("{ pop(shl(10, 32)) }", Warning, "The \"shl\" instruction is only available for Constantinople-compatible VMs.");
 	CHECK_PARSE_WARNING("{ pop(shr(10, 32)) }", Warning, "The \"shr\" instruction is only available for Constantinople-compatible VMs.");

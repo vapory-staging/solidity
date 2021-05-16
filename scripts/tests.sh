@@ -70,49 +70,49 @@ then
     fi
 fi
 
-function download_eth()
+function download_vap()
 {
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        ETH_PATH="$REPO_ROOT/eth"
+        VAP_PATH="$REPO_ROOT/vap"
     elif [ -z $CI ]; then
-        ETH_PATH="eth"
+        VAP_PATH="vap"
     else
         mkdir -p /tmp/test
         if grep -i trusty /etc/lsb-release >/dev/null 2>&1
         then
             # built from 5ac09111bd0b6518365fe956e1bdb97a2db82af1 at 2018-04-05
-            ETH_BINARY=eth_2018-04-05_trusty
-            ETH_HASH="1e5e178b005e5b51f9d347df4452875ba9b53cc6"
+            VAP_BINARY=vap_2018-04-05_trusty
+            VAP_HASH="1e5e178b005e5b51f9d347df4452875ba9b53cc6"
         else
             # built from 5ac09111bd0b6518365fe956e1bdb97a2db82af1 at 2018-04-05
-            ETH_BINARY=eth_2018-04-05_artful
-            ETH_HASH="eb2d0df022753bb2b442ba73e565a9babf6828d6"
+            VAP_BINARY=vap_2018-04-05_artful
+            VAP_HASH="eb2d0df022753bb2b442ba73e565a9babf6828d6"
         fi
-        wget -q -O /tmp/test/eth https://github.com/ethereum/cpp-ethereum/releases/download/solidityTester/$ETH_BINARY
-        test "$(shasum /tmp/test/eth)" = "$ETH_HASH  /tmp/test/eth"
+        wget -q -O /tmp/test/vap https://github.com/vaporyco/cpp-vapory/releases/download/solidityTester/$VAP_BINARY
+        test "$(shasum /tmp/test/eth)" = "$VAP_HASH  /tmp/test/vap"
         sync
         chmod +x /tmp/test/eth
         sync # Otherwise we might get a "text file busy" error
-        ETH_PATH="/tmp/test/eth"
+        VAP_PATH="/tmp/test/vap"
     fi
 
 }
 
 # $1: data directory
 # echos the PID
-function run_eth()
+function run_vap()
 {
-    $ETH_PATH --test -d "$1" >/dev/null 2>&1 &
+    $VAP_PATH --test -d "$1" >/dev/null 2>&1 &
     echo $!
     # Wait until the IPC endpoint is available.
-    while [ ! -S "$1"/geth.ipc ] ; do sleep 1; done
+    while [ ! -S "$1"/gvap.ipc ] ; do sleep 1; done
     sleep 2
 }
 
 if [ "$IPC_ENABLED" = true ];
 then
-    download_eth
-    ETH_PID=$(run_eth /tmp/test)
+    download_vap
+    VAP_PID=$(run_vap /tmp/test)
 fi
 
 progress="--show-progress"
@@ -121,20 +121,20 @@ then
     progress=""
 fi
 
-EVM_VERSIONS="homestead byzantium"
+VVM_VERSIONS="homestead byzantium"
 
 if [ "$CIRCLECI" ] || [ -z "$CI" ]
 then
-EVM_VERSIONS+=" constantinople"
+VVM_VERSIONS+=" constantinople"
 fi
 
 # And then run the Solidity unit-tests in the matrix combination of optimizer / no optimizer
 # and homestead / byzantium VM, # pointing to that IPC endpoint.
 for optimize in "" "--optimize"
 do
-  for vm in $EVM_VERSIONS
+  for vm in $VVM_VERSIONS
   do
-    printTask "--> Running tests using "$optimize" --evm-version "$vm"..."
+    printTask "--> Running tests using "$optimize" --vvm-version "$vm"..."
     log=""
     if [ -n "$log_directory" ]
     then
@@ -145,7 +145,7 @@ do
         log=--logger=JUNIT,test_suite,$log_directory/noopt_$vm.xml $testargs_no_opt
       fi
     fi
-    "$REPO_ROOT"/build/test/soltest $progress $log -- --testpath "$REPO_ROOT"/test "$optimize" --evm-version "$vm" $SMT_FLAGS $IPC_FLAGS  --ipcpath /tmp/test/geth.ipc
+    "$REPO_ROOT"/build/test/soltest $progress $log -- --testpath "$REPO_ROOT"/test "$optimize" --vvm-version "$vm" $SMT_FLAGS $IPC_FLAGS  --ipcpath /tmp/test/gvap.ipc
   done
 done
 
@@ -157,7 +157,7 @@ fi
 
 if [ "$IPC_ENABLED" = true ]
 then
-    pkill "$ETH_PID" || true
+    pkill "$VAP_PID" || true
     sleep 4
-    pgrep "$ETH_PID" && pkill -9 "$ETH_PID" || true
+    pgrep "$VAP_PID" && pkill -9 "$VAP_PID" || true
 fi

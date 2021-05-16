@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE(assembly_staticcall)
 			}
 		}
 	)";
-	if (!dev::test::Options::get().evmVersion().hasStaticCall())
+	if (!dev::test::Options::get().vvmVersion().hasStaticCall())
 		CHECK_WARNING(text, "\"staticcall\" instruction is only available for Byzantium-compatible");
 	else
 		CHECK_SUCCESS_NO_WARNINGS(text);
@@ -456,7 +456,7 @@ BOOST_AUTO_TEST_CASE(assembly_jump)
 			}
 		}
 	)";
-	CHECK_WARNING(text, "low-level EVM features");
+	CHECK_WARNING(text, "low-level VVM features");
 }
 
 BOOST_AUTO_TEST_CASE(constant)

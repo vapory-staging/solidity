@@ -17,7 +17,7 @@
 
 #include <libsolidity/analysis/ViewPureChecker.h>
 
-#include <libevmasm/SemanticInformation.h>
+#include <libvvmasm/SemanticInformation.h>
 
 #include <libsolidity/inlineasm/AsmData.h>
 #include <libsolidity/ast/ExperimentalFeatures.h>
@@ -105,9 +105,9 @@ private:
 	std::function<void(StateMutability, SourceLocation const&)> m_reportMutability;
 	void checkInstruction(SourceLocation _location, solidity::Instruction _instruction)
 	{
-		if (eth::SemanticInformation::invalidInViewFunctions(_instruction))
+		if (vap::SemanticInformation::invalidInViewFunctions(_instruction))
 			m_reportMutability(StateMutability::NonPayable, _location);
-		else if (eth::SemanticInformation::invalidInPureFunctions(_instruction))
+		else if (vap::SemanticInformation::invalidInPureFunctions(_instruction))
 			m_reportMutability(StateMutability::View, _location);
 	}
 };

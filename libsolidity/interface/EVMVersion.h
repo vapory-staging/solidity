@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * EVM versioning.
+ * VVM versioning.
  */
 
 #pragma once
@@ -31,23 +31,23 @@ namespace solidity
 {
 
 /**
- * A version specifier of the EVM we want to compile to.
+ * A version specifier of the VVM we want to compile to.
  * Defaults to the latest version.
  */
-class EVMVersion:
-	boost::less_than_comparable<EVMVersion>,
-	boost::equality_comparable<EVMVersion>
+class VVMVersion:
+	boost::less_than_comparable<VVMVersion>,
+	boost::equality_comparable<VVMVersion>
 {
 public:
-	EVMVersion() {}
+	VVMVersion() {}
 
-	static EVMVersion homestead() { return {Version::Homestead}; }
-	static EVMVersion tangerineWhistle() { return {Version::TangerineWhistle}; }
-	static EVMVersion spuriousDragon() { return {Version::SpuriousDragon}; }
-	static EVMVersion byzantium() { return {Version::Byzantium}; }
-	static EVMVersion constantinople() { return {Version::Constantinople}; }
+	static VVMVersion homestead() { return {Version::Homestead}; }
+	static VVMVersion tangerineWhistle() { return {Version::TangerineWhistle}; }
+	static VVMVersion spuriousDragon() { return {Version::SpuriousDragon}; }
+	static VVMVersion byzantium() { return {Version::Byzantium}; }
+	static VVMVersion constantinople() { return {Version::Constantinople}; }
 
-	static boost::optional<EVMVersion> fromString(std::string const& _version)
+	static boost::optional<VVMVersion> fromString(std::string const& _version)
 	{
 		for (auto const& v: {homestead(), tangerineWhistle(), spuriousDragon(), byzantium(), constantinople()})
 			if (_version == v.name())
@@ -55,8 +55,8 @@ public:
 		return {};
 	}
 
-	bool operator==(EVMVersion const& _other) const { return m_version == _other.m_version; }
-	bool operator<(EVMVersion const& _other) const { return m_version < _other.m_version; }
+	bool operator==(VVMVersion const& _other) const { return m_version == _other.m_version; }
+	bool operator<(VVMVersion const& _other) const { return m_version < _other.m_version; }
 
 	std::string name() const
 	{
@@ -83,7 +83,7 @@ public:
 private:
 	enum class Version { Homestead, TangerineWhistle, SpuriousDragon, Byzantium, Constantinople };
 
-	EVMVersion(Version _version): m_version(_version) {}
+	VVMVersion(Version _version): m_version(_version) {}
 
 	Version m_version = Version::Byzantium;
 };

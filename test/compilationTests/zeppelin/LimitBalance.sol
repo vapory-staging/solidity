@@ -12,7 +12,7 @@ contract LimitBalance {
   uint256 public limit;
 
   /**
-   * @dev Constructor that sets the passed value as a limit. 
+   * @dev Constructor that sets the passed value as a limit.
    * @param _limit uint256 to represent the limit.
    */
   function LimitBalance(uint256 _limit) {

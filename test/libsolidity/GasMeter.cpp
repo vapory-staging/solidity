@@ -21,15 +21,15 @@
  */
 
 #include <test/libsolidity/SolidityExecutionFramework.h>
-#include <libevmasm/GasMeter.h>
-#include <libevmasm/KnownState.h>
-#include <libevmasm/PathGasMeter.h>
+#include <libvvmasm/GasMeter.h>
+#include <libvvmasm/KnownState.h>
+#include <libvvmasm/PathGasMeter.h>
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/interface/GasEstimator.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 using namespace dev::solidity;
 using namespace dev::test;
 
@@ -49,14 +49,14 @@ public:
 		m_compiler.reset(false);
 		m_compiler.addSource("", "pragma solidity >=0.0;\n" + _sourceCode);
 		m_compiler.setOptimiserSettings(dev::test::Options::get().optimize);
-		m_compiler.setEVMVersion(m_evmVersion);
+		m_compiler.setVVMVersion(m_vvmVersion);
 		BOOST_REQUIRE_MESSAGE(m_compiler.compile(), "Compiling contract failed");
 
 		AssemblyItems const* items = m_compiler.runtimeAssemblyItems(m_compiler.lastContractName());
 		ASTNode const& sourceUnit = m_compiler.ast("");
 		BOOST_REQUIRE(items != nullptr);
 		m_gasCosts = GasEstimator::breakToStatementLevel(
-			GasEstimator(dev::test::Options::get().evmVersion()).structuralEstimation(*items, vector<ASTNode const*>({&sourceUnit})),
+			GasEstimator(dev::test::Options::get().vvmVersion()).structuralEstimation(*items, vector<ASTNode const*>({&sourceUnit})),
 			{&sourceUnit}
 		);
 	}
@@ -65,7 +65,7 @@ public:
 	{
 		compileAndRun(_sourceCode);
 		auto state = make_shared<KnownState>();
-		PathGasMeter meter(*m_compiler.assemblyItems(m_compiler.lastContractName()), dev::test::Options::get().evmVersion());
+		PathGasMeter meter(*m_compiler.assemblyItems(m_compiler.lastContractName()), dev::test::Options::get().vvmVersion());
 		GasMeter::GasConsumption gas = meter.estimateMax(0, state);
 		u256 bytecodeSize(m_compiler.runtimeObject(m_compiler.lastContractName()).bytecode.size());
 		// costs for deployment
@@ -91,7 +91,7 @@ public:
 			gas = max(gas, gasForTransaction(hash.asBytes() + arguments, false));
 		}
 
-		gas += GasEstimator(dev::test::Options::get().evmVersion()).functionalEstimation(
+		gas += GasEstimator(dev::test::Options::get().vvmVersion()).functionalEstimation(
 			*m_compiler.runtimeAssemblyItems(m_compiler.lastContractName()),
 			_sig
 		);
@@ -108,7 +108,7 @@ public:
 	}
 
 protected:
-	map<ASTNode const*, eth::GasMeter::GasConsumption> m_gasCosts;
+	map<ASTNode const*, vap::GasMeter::GasConsumption> m_gasCosts;
 };
 
 BOOST_FIXTURE_TEST_SUITE(GasMeterTests, GasMeterTestFramework)

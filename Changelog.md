@@ -51,7 +51,7 @@ Features:
  * General: Allow providing reason string for ``revert()`` and ``require()``.
  * General: Introduce new constructor syntax using the ``constructor`` keyword as experimental 0.5.0 feature.
  * General: Limit the number of errors output in a single run to 256.
- * General: Support accessing dynamic return data in post-byzantium EVMs.
+ * General: Support accessing dynamic return data in post-byzantium VVMs.
  * Inheritance: Error when using empty parentheses for base class constructors that require arguments as experimental 0.5.0 feature.
  * Inheritance: Error when using no parentheses in modifier-style constructor calls as experimental 0.5.0 feature.
  * Interfaces: Allow overriding external functions in interfaces with public in an implementing contract.
@@ -74,13 +74,13 @@ Bugfixes:
  * Code Generator: Treat empty base constructor argument list as not provided.
  * Code Generator: Properly force-clean bytesXX types for shortening conversions.
  * Commandline interface: Fix error messages for imported files that do not exist.
- * Commandline interface: Support ``--evm-version constantinople`` properly.
+ * Commandline interface: Support ``--vvm-version constantinople`` properly.
  * DocString Parser: Fix error message for empty descriptions.
  * Gas Estimator: Correctly ignore costs of fallback function for other functions.
  * JSON AST: Remove storage qualifier for type name strings.
  * Parser: Fix internal compiler error when parsing ``var`` declaration without identifier.
  * Parser: Fix parsing of getters for function type variables.
- * Standard JSON: Support ``constantinople`` as ``evmVersion`` properly.
+ * Standard JSON: Support ``constantinople`` as ``vvmVersion`` properly.
  * Static Analyzer: Fix non-deterministic order of unused variable warnings.
  * Static Analyzer: Invalid arithmetic with constant expressions causes errors.
  * Type Checker: Fix detection of recursive structs.
@@ -94,13 +94,13 @@ Bugfixes:
 
 Features:
  * Code Generator: Assert that ``k != 0`` for ``mulmod(a, b, k)`` and ``addmod(a, b, k)`` as experimental 0.5.0 feature.
- * Code Generator: Do not retain any gas in calls (except if EVM version is set to homestead).
+ * Code Generator: Do not retain any gas in calls (except if VVM version is set to homestead).
  * Code Generator: Use ``STATICCALL`` opcode for calling ``view`` and ``pure`` functions as experimenal 0.5.0 feature.
  * General: C99/C++-style scoping rules (instead of JavaScript function scoping) take effect as experimental v0.5.0 feature.
  * General: Improved messaging when error spans multiple lines of a sourcefile
  * General: Support and recommend using ``emit EventName();`` to call events explicitly.
  * Inline Assembly: Enforce strict mode as experimental 0.5.0 feature.
- * Interface: Provide ability to select target EVM version (homestead or byzantium, with byzantium being the default).
+ * Interface: Provide ability to select target VVM version (homestead or byzantium, with byzantium being the default).
  * Standard JSON: Reject badly formatted invalid JSON inputs.
  * Type Checker: Disallow uninitialized storage pointers as experimental 0.5.0 feature.
  * Syntax Analyser: Do not warn about experimental features if they do not concern code generation.
@@ -168,7 +168,7 @@ Bugfixes:
 Features:
  * Code Generator: Always use all available gas for calls as experimental 0.5.0 feature
    (previously, some amount was retained in order to work in pre-Tangerine-Whistle
-   EVM versions)
+   VVM versions)
  * Parser: Better error message for unexpected trailing comma in parameter lists.
  * Standard JSON: Support the ``outputSelection`` field for selective compilation of supplied sources.
  * Syntax Checker: Unary ``+`` is now a syntax error as experimental 0.5.0 feature.
@@ -223,7 +223,7 @@ Features:
  * ABI JSON: Include new field ``stateMutability`` with values ``pure``, ``view``,
    ``nonpayable`` and ``payable``.
  * Analyzer: Experimental partial support for Z3 SMT checker ("SMTChecker").
- * Build System: Shared libraries (``libdevcore``, ``libevmasm``, ``libsolidity``
+ * Build System: Shared libraries (``libdevcore``, ``libvvmasm``, ``libsolidity``
    and ``liblll``) are no longer produced during the build process.
  * Code generator: Experimental new implementation of ABI encoder that can
    encode arbitrarily nested arrays ("ABIEncoderV2")
@@ -361,7 +361,7 @@ Features:
  * Add ``assert(condition)``, which throws if condition is false (meant for internal errors).
  * Add ``require(condition)``, which throws if condition is false (meant for invalid input).
  * Commandline interface: Do not overwrite files unless forced.
- * Introduce ``.transfer(value)`` for sending Ether.
+ * Introduce ``.transfer(value)`` for sending Vapor.
  * Code generator: Support ``revert()`` to abort with rolling back, but not consuming all gas.
  * Inline assembly: Support ``revert`` (EIP140) as an opcode.
  * Parser: Support scientific notation in numbers (e.g. ``2e8`` and ``200e-2``).
@@ -508,11 +508,11 @@ Bugfixes:
 
 This release deliberately breaks backwards compatibility mostly to
 enforce some safety features. The most important change is that you have
-to explicitly specify if functions can receive ether via the ``payable``
+to explicitly specify if functions can receive vapor via the ``payable``
 modifier. Furthermore, more situations cause exceptions to be thrown.
 
 Minimal changes to be made for upgrade:
- - Add ``payable`` to all functions that want to receive Ether
+ - Add ``payable`` to all functions that want to receive Vapor
    (including the constructor and the fallback function).
  - Change ``_`` to ``_;`` in modifiers.
  - Add version pragma to each file: ``pragma solidity ^0.4.0;``
@@ -522,9 +522,9 @@ Breaking Changes:
  * Source files have to specify the compiler version they are
    compatible with using e.g. ``pragma solidity ^0.4.0;`` or
    ``pragma solidity >=0.4.0 <0.4.8;``
- * Functions that want to receive Ether have to specify the
+ * Functions that want to receive Vapor have to specify the
    new ``payable`` modifier (otherwise they throw).
- * Contracts that want to receive Ether with a plain "send"
+ * Contracts that want to receive Vapor with a plain "send"
    have to implement a fallback function with the ``payable``
    modifier. Contracts now throw if no payable fallback
    function is defined and no function matches the signature.
@@ -539,7 +539,7 @@ Breaking Changes:
  * Removed ``--interface`` (Solidity interface) output option
  * JSON AST: General cleanup, renamed many nodes to match their C++ names.
  * JSON output: ``srcmap-runtime`` renamed to ``srcmapRuntime``.
- * Moved (and reworked) standard library contracts from inside the compiler to github.com/ethereum/solidity/std
+ * Moved (and reworked) standard library contracts from inside the compiler to github.com/vaporyco/solidity/std
    (``import "std";`` or ``import owned;`` do not work anymore).
  * Confusing and undocumented keyword ``after`` was removed.
  * New reserved words: ``abstract``, ``hex``, ``interface``, ``payable``, ``pure``, ``static``, ``view``.
@@ -716,7 +716,7 @@ Bugfixes:
  * Linker stage for compiler to insert other contract's addresses (used for libraries).
  * Compiler option to output runtime part of contracts.
  * Compile-time out of bounds check for access to fixed-size arrays by integer constants.
- * Version string includes libevmasm/libethereum's version (contains the optimizer).
+ * Version string includes libvvmasm/libvapory's version (contains the optimizer).
  * Bugfix: Accessors for constant public state variables.
  * Bugfix: Propagate exceptions in clone contracts.
  * Bugfix: Empty single-line comments are now treated properly.

@@ -25,10 +25,10 @@
 
 #include <libsolidity/interface/ErrorReporter.h>
 #include <libsolidity/interface/ReadFile.h>
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
-#include <libevmasm/SourceLocation.h>
-#include <libevmasm/LinkerObject.h>
+#include <libvvmasm/SourceLocation.h>
+#include <libvvmasm/LinkerObject.h>
 
 #include <libdevcore/Common.h>
 #include <libdevcore/FixedHash.h>
@@ -47,7 +47,7 @@
 namespace dev
 {
 
-namespace eth
+namespace vap
 {
 class Assembly;
 class AssemblyItem;
@@ -122,7 +122,7 @@ public:
 		m_optimizeRuns = _runs;
 	}
 
-	void setEVMVersion(EVMVersion _version = EVMVersion{});
+	void setVVMVersion(VVMVersion _version = VVMVersion{});
 
 	/// Sets the list of requested contract names. If empty, no filtering is performed and every contract
 	/// found in the supplied sources is compiled. Names are cleared iff @a _contractNames is missing.
@@ -183,22 +183,22 @@ public:
 	std::string const filesystemFriendlyName(std::string const& _contractName) const;
 
 	/// @returns the assembled object for a contract.
-	eth::LinkerObject const& object(std::string const& _contractName) const;
+	vap::LinkerObject const& object(std::string const& _contractName) const;
 
 	/// @returns the runtime object for the contract.
-	eth::LinkerObject const& runtimeObject(std::string const& _contractName) const;
+	vap::LinkerObject const& runtimeObject(std::string const& _contractName) const;
 
 	/// @returns the bytecode of a contract that uses an already deployed contract via DELEGATECALL.
 	/// The returned bytes will contain a sequence of 20 bytes of the format "XXX...XXX" which have to
 	/// substituted by the actual address. Note that this sequence starts end ends in three X
 	/// characters but can contain anything in between.
-	eth::LinkerObject const& cloneObject(std::string const& _contractName) const;
+	vap::LinkerObject const& cloneObject(std::string const& _contractName) const;
 
 	/// @returns normal contract assembly items
-	eth::AssemblyItems const* assemblyItems(std::string const& _contractName) const;
+	vap::AssemblyItems const* assemblyItems(std::string const& _contractName) const;
 
 	/// @returns runtime contract assembly items
-	eth::AssemblyItems const* runtimeAssemblyItems(std::string const& _contractName) const;
+	vap::AssemblyItems const* runtimeAssemblyItems(std::string const& _contractName) const;
 
 	/// @returns the string that provides a mapping between bytecode and sourcecode or a nullptr
 	/// if the contract does not (yet) have bytecode.
@@ -255,9 +255,9 @@ private:
 	{
 		ContractDefinition const* contract = nullptr;
 		std::shared_ptr<Compiler> compiler;
-		eth::LinkerObject object;
-		eth::LinkerObject runtimeObject;
-		eth::LinkerObject cloneObject;
+		vap::LinkerObject object;
+		vap::LinkerObject runtimeObject;
+		vap::LinkerObject cloneObject;
 		std::string metadata; ///< The metadata json that will be hashed into the chain.
 		mutable std::unique_ptr<Json::Value const> abi;
 		mutable std::unique_ptr<Json::Value const> userDocumentation;
@@ -283,7 +283,7 @@ private:
 	/// Compile a single contract and put the result in @a _compiledContracts.
 	void compileContract(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*>& _compiledContracts
+		std::map<ContractDefinition const*, vap::Assembly const*>& _compiledContracts
 	);
 	void link();
 
@@ -295,7 +295,7 @@ private:
 	ContractDefinition const& contractDefinition(std::string const& _contractName) const;
 
 	std::string createMetadata(Contract const& _contract) const;
-	std::string computeSourceMapping(eth::AssemblyItems const& _items) const;
+	std::string computeSourceMapping(vap::AssemblyItems const& _items) const;
 	Json::Value const& contractABI(Contract const&) const;
 	Json::Value const& natspecUser(Contract const&) const;
 	Json::Value const& natspecDev(Contract const&) const;
@@ -318,10 +318,10 @@ private:
 	ReadCallback::Callback m_smtQuery;
 	bool m_optimize = false;
 	unsigned m_optimizeRuns = 200;
-	EVMVersion m_evmVersion;
+	VVMVersion m_vvmVersion;
 	std::set<std::string> m_requestedContractNames;
 	std::map<std::string, h160> m_libraries;
-	/// list of path prefix remappings, e.g. mylibrary: github.com/ethereum = /usr/local/ethereum
+	/// list of path prefix remappings, e.g. mylibrary: github.com/vaporyco = /usr/local/vapory
 	/// "context:prefix=target"
 	std::vector<Remapping> m_remappings;
 	std::map<std::string const, Source> m_sources;

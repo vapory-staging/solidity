@@ -26,9 +26,9 @@
 #include <test/Options.h>
 
 #include <libsolidity/interface/Exceptions.h>
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -1519,7 +1519,7 @@ BOOST_AUTO_TEST_CASE(blockchain)
 			}
 		}
 	)";
-	BOOST_CHECK(m_rpc.rpcCall("miner_setEtherbase", {"\"0x1212121212121212121212121212121212121212\""}).asBool() == true);
+	BOOST_CHECK(m_rpc.rpcCall("miner_setVaporbase", {"\"0x1212121212121212121212121212121212121212\""}).asBool() == true);
 	m_rpc.test_mineBlocks(5);
 	compileAndRun(sourceCode, 27);
 	ABI_CHECK(callContractFunctionWithValue("someInfo()", 28), encodeArgs(28, u256("0x1212121212121212121212121212121212121212"), 7));
@@ -1757,7 +1757,7 @@ BOOST_AUTO_TEST_CASE(convert_uint_to_fixed_bytes_greater_size)
 	);
 }
 
-BOOST_AUTO_TEST_CASE(send_ether)
+BOOST_AUTO_TEST_CASE(send_vapor)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -1775,7 +1775,7 @@ BOOST_AUTO_TEST_CASE(send_ether)
 	BOOST_CHECK_EQUAL(balanceAt(address), amount);
 }
 
-BOOST_AUTO_TEST_CASE(transfer_ether)
+BOOST_AUTO_TEST_CASE(transfer_vapor)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -2515,7 +2515,7 @@ BOOST_AUTO_TEST_CASE(contracts_as_addresses)
 {
 	char const* sourceCode = R"(
 		contract helper {
-			function() payable { } // can receive ether
+			function() payable { } // can receive vapor
 		}
 		contract test {
 			helper h;
@@ -5398,7 +5398,7 @@ BOOST_AUTO_TEST_CASE(assignment_to_const_var_involving_keccak)
 	ABI_CHECK(callContractFunction("f()"), encodeArgs(dev::keccak256("abc")));
 }
 
-// Disabled until https://github.com/ethereum/solidity/issues/715 is implemented
+// Disabled until https://github.com/vaporyco/solidity/issues/715 is implemented
 //BOOST_AUTO_TEST_CASE(assignment_to_const_array_vars)
 //{
 //	char const* sourceCode = R"(
@@ -5412,7 +5412,7 @@ BOOST_AUTO_TEST_CASE(assignment_to_const_var_involving_keccak)
 //	ABI_CHECK(callContractFunction("f()"), encodeArgs(1 + 2 + 3));
 //}
 
-// Disabled until https://github.com/ethereum/solidity/issues/715 is implemented
+// Disabled until https://github.com/vaporyco/solidity/issues/715 is implemented
 //BOOST_AUTO_TEST_CASE(constant_struct)
 //{
 //	char const* sourceCode = R"(
@@ -5990,7 +5990,7 @@ BOOST_AUTO_TEST_CASE(struct_delete_struct_in_mapping)
 	ABI_CHECK(callContractFunction("deleteIt()"), encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_out_of_band_access)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_out_of_band_access)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -6014,7 +6014,7 @@ BOOST_AUTO_TEST_CASE(evm_exceptions_out_of_band_access)
 	ABI_CHECK(callContractFunction("test()"), encodeArgs(false));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_call_fail)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_in_constructor_call_fail)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -6038,7 +6038,7 @@ BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_call_fail)
 	ABI_CHECK(callContractFunction("test()"), encodeArgs(2));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_out_of_baund)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_in_constructor_out_of_baund)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -6093,10 +6093,10 @@ BOOST_AUTO_TEST_CASE(failing_send)
 	BOOST_REQUIRE(callContractFunction("callHelper(address)", c_helperAddress) == encodeArgs(true, 20));
 }
 
-BOOST_AUTO_TEST_CASE(send_zero_ether)
+BOOST_AUTO_TEST_CASE(send_zero_vapor)
 {
-	// Sending zero ether to a contract should still invoke the fallback function
-	// (it previously did not because the gas stipend was not provided by the EVM)
+	// Sending zero vapor to a contract should still invoke the fallback function
+	// (it previously did not because the gas stipend was not provided by the VVM)
 	char const* sourceCode = R"(
 		contract Receiver {
 			function () payable {
@@ -7606,7 +7606,7 @@ BOOST_AUTO_TEST_CASE(contract_binary_dependencies)
 	compileAndRun(sourceCode);
 }
 
-BOOST_AUTO_TEST_CASE(reject_ether_sent_to_library)
+BOOST_AUTO_TEST_CASE(reject_vapor_sent_to_library)
 {
 	char const* sourceCode = R"(
 		library lib {}
@@ -8259,15 +8259,15 @@ BOOST_AUTO_TEST_CASE(inline_array_return)
 {
 	char const* sourceCode = R"(
 		contract C {
-			uint8[] tester; 
+			uint8[] tester;
 			function f() returns (uint8[5]) {
 				return ([1,2,3,4,5]);
 			}
 			function test() returns (uint8, uint8, uint8, uint8, uint8) {
-				tester = f(); 
+				tester = f();
 				return (tester[0], tester[1], tester[2], tester[3], tester[4]);
 			}
-			
+
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
@@ -8291,13 +8291,13 @@ BOOST_AUTO_TEST_CASE(inline_array_singleton)
 BOOST_AUTO_TEST_CASE(inline_long_string_return)
 {
 		char const* sourceCode = R"(
-		contract C { 
+		contract C {
 			function f() returns (string) {
 				return (["somethingShort", "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678900123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"][1]);
 			}
 		}
 	)";
-	
+
 	string strLong = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678900123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
 	compileAndRun(sourceCode, 0, "C");
 	ABI_CHECK(callContractFunction("f()"), encodeDyn(strLong));
@@ -8922,7 +8922,7 @@ BOOST_AUTO_TEST_CASE(cleanup_bytes_types_shortening)
 
 BOOST_AUTO_TEST_CASE(skip_dynamic_types)
 {
-	// The EVM cannot provide access to dynamically-sized return values, so we have to skip them.
+	// The VVM cannot provide access to dynamically-sized return values, so we have to skip them.
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (uint, uint[], uint) {
@@ -9332,7 +9332,7 @@ BOOST_AUTO_TEST_CASE(no_nonpayable_circumvention_by_modifier)
 	char const* sourceCode = R"(
 		contract C {
 			modifier tryCircumvent {
-				if (false) _; // avoid the function, we should still not accept ether
+				if (false) _; // avoid the function, we should still not accept vapor
 			}
 			function f() tryCircumvent returns (uint) {
 				return msg.value;
@@ -10782,7 +10782,7 @@ BOOST_AUTO_TEST_CASE(revert_with_cause)
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
-	bool const haveReturndata = dev::test::Options::get().evmVersion().supportsReturndata();
+	bool const haveReturndata = dev::test::Options::get().vvmVersion().supportsReturndata();
 	bytes const errorSignature = bytes{0x08, 0xc3, 0x79, 0xa0};
 	ABI_CHECK(callContractFunction("f()"), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 7, "test123") + bytes(28, 0) : bytes());
 	ABI_CHECK(callContractFunction("g()"), haveReturndata ? encodeArgs(0, 0x40, 0x84) + errorSignature + encodeArgs(0x20, 44, "test1234567890123456789012345678901234567890") + bytes(28, 0): bytes());
@@ -10854,7 +10854,7 @@ BOOST_AUTO_TEST_CASE(require_with_message)
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
-	bool const haveReturndata = dev::test::Options::get().evmVersion().supportsReturndata();
+	bool const haveReturndata = dev::test::Options::get().vvmVersion().supportsReturndata();
 	bytes const errorSignature = bytes{0x08, 0xc3, 0x79, 0xa0};
 	ABI_CHECK(callContractFunction("f(uint256)", 8), haveReturndata ? encodeArgs(1, 0x40, 0) : bytes());
 	ABI_CHECK(callContractFunction("f(uint256)", 5), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 6, "failed") + bytes(28, 0) : bytes());
@@ -10898,7 +10898,7 @@ BOOST_AUTO_TEST_CASE(bubble_up_error_messages)
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
-	bool const haveReturndata = dev::test::Options::get().evmVersion().supportsReturndata();
+	bool const haveReturndata = dev::test::Options::get().vvmVersion().supportsReturndata();
 	bytes const errorSignature = bytes{0x08, 0xc3, 0x79, 0xa0};
 	ABI_CHECK(callContractFunction("f()"), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 7, "message") + bytes(28, 0) : bytes());
 	ABI_CHECK(callContractFunction("g()"), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 7, "message") + bytes(28, 0) : bytes());
@@ -10934,7 +10934,7 @@ BOOST_AUTO_TEST_CASE(bubble_up_error_messages_through_transfer)
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
-	bool const haveReturndata = dev::test::Options::get().evmVersion().supportsReturndata();
+	bool const haveReturndata = dev::test::Options::get().vvmVersion().supportsReturndata();
 	bytes const errorSignature = bytes{0x08, 0xc3, 0x79, 0xa0};
 	ABI_CHECK(callContractFunction("f()"), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 7, "message") + bytes(28, 0) : bytes());
 }
@@ -10971,7 +10971,7 @@ BOOST_AUTO_TEST_CASE(bubble_up_error_messages_through_create)
 		}
 	)";
 	compileAndRun(sourceCode, 0, "C");
-	bool const haveReturndata = dev::test::Options::get().evmVersion().supportsReturndata();
+	bool const haveReturndata = dev::test::Options::get().vvmVersion().supportsReturndata();
 	bytes const errorSignature = bytes{0x08, 0xc3, 0x79, 0xa0};
 	ABI_CHECK(callContractFunction("f()"), haveReturndata ? encodeArgs(0, 0x40, 0x64) + errorSignature + encodeArgs(0x20, 7, "message") + bytes(28, 0) : bytes());
 }
@@ -11781,7 +11781,7 @@ BOOST_AUTO_TEST_CASE(abi_encode_with_selectorv2)
 				bytes4 x = 0x12345678;
 				S memory s;
 				s.a = 0x1234567;
-				s.b = "Lorem ipsum dolor sit ethereum........";
+				s.b = "Lorem ipsum dolor sit vapory........";
 				s.c = 0x1234;
 				return abi.encodeWithSelector(x, uint(-1), s, uint(3));
 			}
@@ -11799,7 +11799,7 @@ BOOST_AUTO_TEST_CASE(abi_encode_with_selectorv2)
 	expectation =
 		encodeArgs(0x20, 4 + 0x120) +
 		bytes{0x12, 0x34, 0x56, 0x78} +
-		encodeArgs(u256(-1), 0x60, u256(3), 0x1234567, 0x60, 0x1234, 38, "Lorem ipsum dolor sit ethereum........") +
+		encodeArgs(u256(-1), 0x60, u256(3), 0x1234567, 0x60, 0x1234, 38, "Lorem ipsum dolor sit vapory........") +
 		bytes(0x20 - 4);
 	ABI_CHECK(callContractFunction("f4()"), expectation);
 }
@@ -11881,7 +11881,7 @@ BOOST_AUTO_TEST_CASE(abi_encode_with_signaturev2)
 				bytes4 x = 0x12345678;
 				S memory s;
 				s.a = 0x1234567;
-				s.b = "Lorem ipsum dolor sit ethereum........";
+				s.b = "Lorem ipsum dolor sit vapory........";
 				s.c = 0x1234;
 				return abi.encodeWithSignature(s.b, uint(-1), s, uint(3));
 			}
@@ -11901,7 +11901,7 @@ BOOST_AUTO_TEST_CASE(abi_encode_with_signaturev2)
 	expectation =
 		encodeArgs(0x20, 4 + 0x120) +
 		bytes{0x7c, 0x79, 0x30, 0x02} +
-		encodeArgs(u256(-1), 0x60, u256(3), 0x1234567, 0x60, 0x1234, 38, "Lorem ipsum dolor sit ethereum........") +
+		encodeArgs(u256(-1), 0x60, u256(3), 0x1234567, 0x60, 0x1234, 38, "Lorem ipsum dolor sit vapory........") +
 		bytes(0x20 - 4);
 	ABI_CHECK(callContractFunction("f4()"), expectation);
 }
@@ -11964,7 +11964,7 @@ BOOST_AUTO_TEST_CASE(staticcall_for_view_and_pure)
 	compileAndRun(sourceCode, 0, "D");
 	// This should work (called via CALL)
 	ABI_CHECK(callContractFunction("f()"), encodeArgs(1));
-	if (dev::test::Options::get().evmVersion().hasStaticCall())
+	if (dev::test::Options::get().vvmVersion().hasStaticCall())
 	{
 		// These should throw (called via STATICCALL)
 		ABI_CHECK(callContractFunction("fview()"), encodeArgs());
@@ -12023,7 +12023,7 @@ BOOST_AUTO_TEST_CASE(swap_peephole_optimisation)
 
 BOOST_AUTO_TEST_CASE(bitwise_shifting_constantinople)
 {
-	if (!dev::test::Options::get().evmVersion().hasBitwiseShifting())
+	if (!dev::test::Options::get().vvmVersion().hasBitwiseShifting())
 		return;
 	char const* sourceCode = R"(
 		contract C {
@@ -12069,7 +12069,7 @@ BOOST_AUTO_TEST_CASE(bitwise_shifting_constantinople)
 
 BOOST_AUTO_TEST_CASE(bitwise_shifting_constants_constantinople)
 {
-	if (!dev::test::Options::get().evmVersion().hasBitwiseShifting())
+	if (!dev::test::Options::get().vvmVersion().hasBitwiseShifting())
 		return;
 	char const* sourceCode = R"(
 		contract C {

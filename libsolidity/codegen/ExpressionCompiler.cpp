@@ -17,7 +17,7 @@
 /**
  * @author Christian <c@ethdev.com>
  * @date 2014
- * Solidity AST to EVM bytecode compiler for expressions.
+ * Solidity AST to VVM bytecode compiler for expressions.
  */
 
 #include <utility>
@@ -31,7 +31,7 @@
 #include <libsolidity/codegen/CompilerContext.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 #include <libsolidity/codegen/LValue.h>
-#include <libevmasm/GasMeter.h>
+#include <libvvmasm/GasMeter.h>
 
 #include <libdevcore/Whiskers.h>
 
@@ -80,7 +80,7 @@ void ExpressionCompiler::appendConstStateVariableAccessor(VariableDeclaration co
 
 	// append return
 	m_context << dupInstruction(_varDecl.annotation().type->sizeOnStack() + 1);
-	m_context.appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+	m_context.appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 }
 
 void ExpressionCompiler::appendStateVariableAccessor(VariableDeclaration const& _varDecl)
@@ -183,17 +183,17 @@ void ExpressionCompiler::appendStateVariableAccessor(VariableDeclaration const& 
 			errinfo_comment("Stack too deep.")
 		);
 	m_context << dupInstruction(retSizeOnStack + 1);
-	m_context.appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+	m_context.appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 }
 
 bool ExpressionCompiler::visit(Conditional const& _condition)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _condition);
 	_condition.condition().accept(*this);
-	eth::AssemblyItem trueTag = m_context.appendConditionalJump();
+	vap::AssemblyItem trueTag = m_context.appendConditionalJump();
 	_condition.falseExpression().accept(*this);
 	utils().convertType(*_condition.falseExpression().annotation().type, *_condition.annotation().type);
-	eth::AssemblyItem endTag = m_context.appendJumpToNew();
+	vap::AssemblyItem endTag = m_context.appendJumpToNew();
 	m_context << trueTag;
 	int offset = _condition.annotation().type->sizeOnStack();
 	m_context.adjustStackOffset(-offset);
@@ -281,19 +281,19 @@ bool ExpressionCompiler::visit(TupleExpression const& _tuple)
 	if (_tuple.isInlineArray())
 	{
 		ArrayType const& arrayType = dynamic_cast<ArrayType const&>(*_tuple.annotation().type);
-		
+
 		solAssert(!arrayType.isDynamicallySized(), "Cannot create dynamically sized inline array.");
 		m_context << max(u256(32u), arrayType.memorySize());
 		utils().allocateMemory();
 		m_context << Instruction::DUP1;
-	
+
 		for (auto const& component: _tuple.components())
 		{
 			component->accept(*this);
 			utils().convertType(*component->annotation().type, *arrayType.baseType(), true);
-			utils().storeInMemoryDynamic(*arrayType.baseType(), true);				
+			utils().storeInMemoryDynamic(*arrayType.baseType(), true);
 		}
-		
+
 		m_context << Instruction::POP;
 	}
 	else
@@ -514,7 +514,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// Calling convention: Caller pushes return address and arguments
 			// Callee removes them and pushes return values
 
-			eth::AssemblyItem returnLabel = m_context.pushNewTag();
+			vap::AssemblyItem returnLabel = m_context.pushNewTag();
 			for (unsigned i = 0; i < arguments.size(); ++i)
 			{
 				arguments[i]->accept(*this);
@@ -553,7 +553,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				// Extract the runtime part.
 				m_context << ((u256(1) << 32) - 1) << Instruction::AND;
 
-			m_context.appendJump(eth::AssemblyItem::JumpType::IntoFunction);
+			m_context.appendJump(vap::AssemblyItem::JumpType::IntoFunction);
 			m_context << returnLabel;
 
 			unsigned returnParametersSize = CompilerUtils::sizeOnStack(function.returnParameterTypes());
@@ -590,10 +590,10 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				[contract](CompilerContext& _context)
 				{
 					// copy the contract's code into memory
-					eth::Assembly const& assembly = _context.compiledContract(*contract);
+					vap::Assembly const& assembly = _context.compiledContract(*contract);
 					CompilerUtils(_context).fetchFreeMemoryPointer();
 					// pushes size
-					auto subroutine = _context.addSubroutine(make_shared<eth::Assembly>(assembly));
+					auto subroutine = _context.addSubroutine(make_shared<vap::Assembly>(assembly));
 					_context << Instruction::DUP1 << subroutine;
 					_context << Instruction::DUP4 << Instruction::CODECOPY;
 					_context << Instruction::ADD;
@@ -644,9 +644,9 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		case FunctionType::Kind::Send:
 		case FunctionType::Kind::Transfer:
 			_functionCall.expression().accept(*this);
-			// Provide the gas stipend manually at first because we may send zero ether.
-			// Will be zeroed if we send more than zero ether.
-			m_context << u256(eth::GasCosts::callStipend);
+			// Provide the gas stipend manually at first because we may send zero vapor.
+			// Will be zeroed if we send more than zero vapor.
+			m_context << u256(vap::GasCosts::callStipend);
 			arguments.front()->accept(*this);
 			utils().convertType(
 				*arguments.front()->annotation().type,
@@ -1532,7 +1532,7 @@ void ExpressionCompiler::endVisit(Literal const& _literal)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _literal);
 	TypePointer type = _literal.annotation().type;
-	
+
 	switch (type->category())
 	{
 	case Type::Category::RationalNumber:
@@ -1556,7 +1556,7 @@ void ExpressionCompiler::appendAndOrOperatorCode(BinaryOperation const& _binaryO
 	m_context << Instruction::DUP1;
 	if (c_op == Token::And)
 		m_context << Instruction::ISZERO;
-	eth::AssemblyItem endLabel = m_context.appendConditionalJump();
+	vap::AssemblyItem endLabel = m_context.appendConditionalJump();
 	m_context << Instruction::POP;
 	_binaryOperation.rightExpression().accept(*this);
 	m_context << endLabel;
@@ -1716,14 +1716,14 @@ void ExpressionCompiler::appendShiftOperatorCode(Token::Value _operator, Type co
 	switch (_operator)
 	{
 	case Token::SHL:
-		if (m_context.evmVersion().hasBitwiseShifting())
+		if (m_context.vvmVersion().hasBitwiseShifting())
 			m_context << Instruction::SHL;
 		else
 			m_context << u256(2) << Instruction::EXP << Instruction::MUL;
 		break;
 	case Token::SAR:
 		// NOTE: SAR rounds differently than SDIV
-		if (m_context.evmVersion().hasBitwiseShifting() && !c_valueSigned)
+		if (m_context.vvmVersion().hasBitwiseShifting() && !c_valueSigned)
 			m_context << Instruction::SHR;
 		else
 			m_context << u256(2) << Instruction::EXP << Instruction::SWAP1 << (c_valueSigned ? Instruction::SDIV : Instruction::DIV);
@@ -1769,9 +1769,9 @@ void ExpressionCompiler::appendExternalFunctionCall(
 	bool useStaticCall =
 		_functionType.stateMutability() <= StateMutability::View &&
 		m_context.experimentalFeatureActive(ExperimentalFeature::V050) &&
-		m_context.evmVersion().hasStaticCall();
+		m_context.vvmVersion().hasStaticCall();
 
-	bool haveReturndatacopy = m_context.evmVersion().supportsReturndata();
+	bool haveReturndatacopy = m_context.vvmVersion().supportsReturndata();
 	unsigned retSize = 0;
 	TypePointers returnTypes;
 	if (returnSuccessCondition)
@@ -1846,7 +1846,7 @@ void ExpressionCompiler::appendExternalFunctionCall(
 		utils().storeFreeMemoryPointer();
 	}
 
-	if (!m_context.evmVersion().canOverchargeGasForCall())
+	if (!m_context.vvmVersion().canOverchargeGasForCall())
 	{
 		// Touch the end of the output area so that we do not pay for memory resize during the call
 		// (which we would have to subtract from the gas left)
@@ -1930,18 +1930,18 @@ void ExpressionCompiler::appendExternalFunctionCall(
 
 	if (_functionType.gasSet())
 		m_context << dupInstruction(m_context.baseToCurrentStackOffset(gasStackPos));
-	else if (m_context.evmVersion().canOverchargeGasForCall())
-		// Send all gas (requires tangerine whistle EVM)
+	else if (m_context.vvmVersion().canOverchargeGasForCall())
+		// Send all gas (requires tangerine whistle VVM)
 		m_context << Instruction::GAS;
 	else
 	{
 		// send all gas except the amount needed to execute "SUB" and "CALL"
 		// @todo this retains too much gas for now, needs to be fine-tuned.
-		u256 gasNeededByCaller = eth::GasCosts::callGas(m_context.evmVersion()) + 10;
+		u256 gasNeededByCaller = vap::GasCosts::callGas(m_context.vvmVersion()) + 10;
 		if (_functionType.valueSet())
-			gasNeededByCaller += eth::GasCosts::callValueTransferGas;
+			gasNeededByCaller += vap::GasCosts::callValueTransferGas;
 		if (!existenceChecked)
-			gasNeededByCaller += eth::GasCosts::callNewAccountGas; // we never know
+			gasNeededByCaller += vap::GasCosts::callNewAccountGas; // we never know
 		m_context << gasNeededByCaller << Instruction::GAS << Instruction::SUB;
 	}
 	// Order is important here, STATICCALL might overlap with DELEGATECALL.
@@ -2016,7 +2016,7 @@ void ExpressionCompiler::appendExternalFunctionCall(
 			solAssert(retSize > 0, "");
 		// Always use the actual return length, and not our calculated expected length, if returndatacopy is supported.
 		// This ensures it can catch badly formatted input from external calls.
-		m_context << (haveReturndatacopy ? eth::AssemblyItem(Instruction::RETURNDATASIZE) : u256(retSize));
+		m_context << (haveReturndatacopy ? vap::AssemblyItem(Instruction::RETURNDATASIZE) : u256(retSize));
 		// Stack: return_data_start return_data_size
 		if (needToUpdateFreeMemoryPtr)
 			m_context.appendInlineAssembly(R"({

@@ -27,7 +27,7 @@
 #include "../Metadata.h"
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 
 namespace dev
 {
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 		"settings": {
 			"outputSelection": {
 				"fileA": {
-					"A": [ "abi", "devdoc", "userdoc", "evm.bytecode", "evm.assembly", "evm.gasEstimates", "metadata" ],
+					"A": [ "abi", "devdoc", "userdoc", "vvm.bytecode", "vvm.assembly", "vvm.gasEstimates", "metadata" ],
 					"": [ "legacyAST" ]
 				}
 			}
@@ -255,16 +255,16 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 	BOOST_CHECK_EQUAL(dev::jsonCompactPrint(contract["devdoc"]), "{\"methods\":{}}");
 	BOOST_CHECK(contract["userdoc"].isObject());
 	BOOST_CHECK_EQUAL(dev::jsonCompactPrint(contract["userdoc"]), "{\"methods\":{}}");
-	BOOST_CHECK(contract["evm"].isObject());
-	/// @TODO check evm.methodIdentifiers, legacyAssembly, bytecode, deployedBytecode
-	BOOST_CHECK(contract["evm"]["bytecode"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["object"].isString());
+	BOOST_CHECK(contract["vvm"].isObject());
+	/// @TODO check vvm.methodIdentifiers, legacyAssembly, bytecode, deployedBytecode
+	BOOST_CHECK(contract["vvm"]["bytecode"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["object"].isString());
 	BOOST_CHECK_EQUAL(
-		dev::test::bytecodeSansMetadata(contract["evm"]["bytecode"]["object"].asString()),
+		dev::test::bytecodeSansMetadata(contract["vvm"]["bytecode"]["object"].asString()),
 		"6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00"
 	);
-	BOOST_CHECK(contract["evm"]["assembly"].isString());
-	BOOST_CHECK(contract["evm"]["assembly"].asString().find(
+	BOOST_CHECK(contract["vvm"]["assembly"].isString());
+	BOOST_CHECK(contract["vvm"]["assembly"].asString().find(
 		"    /* \"fileA\":0:14  contract A { } */\n  mstore(0x40, 0x80)\n  "
 		"callvalue\n    /* \"--CODEGEN--\":8:17   */\n  dup1\n    "
 		"/* \"--CODEGEN--\":5:7   */\n  iszero\n  tag_1\n  jumpi\n    "
@@ -275,9 +275,9 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 		"/* \"fileA\":0:14  contract A { } */\n      mstore(0x40, 0x80)\n      0x0\n      "
 		"dup1\n      revert\n\n    auxdata: 0xa165627a7a72305820"
 	) == 0);
-	BOOST_CHECK(contract["evm"]["gasEstimates"].isObject());
+	BOOST_CHECK(contract["vvm"]["gasEstimates"].isObject());
 	BOOST_CHECK_EQUAL(
-		dev::jsonCompactPrint(contract["evm"]["gasEstimates"]),
+		dev::jsonCompactPrint(contract["vvm"]["gasEstimates"]),
 		"{\"creation\":{\"codeDepositCost\":\"10600\",\"executionCost\":\"66\",\"totalCost\":\"10666\"}}"
 	);
 	BOOST_CHECK(contract["metadata"].isString());
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE(filename_with_colon)
 		"language": "Solidity",
 		"settings": {
 			"outputSelection": {
-				"http://github.com/ethereum/solidity/std/StandardToken.sol": {
+				"http://github.com/vaporyco/solidity/std/StandardToken.sol": {
 					"A": [
 						"abi"
 					]
@@ -526,7 +526,7 @@ BOOST_AUTO_TEST_CASE(filename_with_colon)
 			}
 		},
 		"sources": {
-			"http://github.com/ethereum/solidity/std/StandardToken.sol": {
+			"http://github.com/vaporyco/solidity/std/StandardToken.sol": {
 				"content": "contract A { }"
 			}
 		}
@@ -534,7 +534,7 @@ BOOST_AUTO_TEST_CASE(filename_with_colon)
 	)";
 	Json::Value result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "http://github.com/ethereum/solidity/std/StandardToken.sol", "A");
+	Json::Value contract = getContractResult(result, "http://github.com/vaporyco/solidity/std/StandardToken.sol", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(dev::jsonCompactPrint(contract["abi"]), "[]");
@@ -549,7 +549,7 @@ BOOST_AUTO_TEST_CASE(library_filename_with_colon)
 			"outputSelection": {
 				"fileA": {
 					"A": [
-						"evm.bytecode"
+						"vvm.bytecode"
 					]
 				}
 			}
@@ -568,11 +568,11 @@ BOOST_AUTO_TEST_CASE(library_filename_with_colon)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json::Value contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["git:library.sol"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["git:library.sol"]["L"].isArray());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["git:library.sol"]["L"][0].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["git:library.sol"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["git:library.sol"]["L"].isArray());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["git:library.sol"]["L"][0].isObject());
 }
 
 BOOST_AUTO_TEST_CASE(libraries_invalid_top_level)
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE(library_linking)
 			"outputSelection": {
 				"fileA": {
 					"A": [
-						"evm.bytecode"
+						"vvm.bytecode"
 					]
 				}
 			}
@@ -721,15 +721,15 @@ BOOST_AUTO_TEST_CASE(library_linking)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json::Value contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"].isObject());
-	BOOST_CHECK(!contract["evm"]["bytecode"]["linkReferences"]["library.sol"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["library2.sol"].isObject());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["library2.sol"]["L2"].isArray());
-	BOOST_CHECK(contract["evm"]["bytecode"]["linkReferences"]["library2.sol"]["L2"][0].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"].isObject());
+	BOOST_CHECK(!contract["vvm"]["bytecode"]["linkReferences"]["library.sol"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["library2.sol"].isObject());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["library2.sol"]["L2"].isArray());
+	BOOST_CHECK(contract["vvm"]["bytecode"]["linkReferences"]["library2.sol"]["L2"][0].isObject());
 }
 
-BOOST_AUTO_TEST_CASE(evm_version)
+BOOST_AUTO_TEST_CASE(vvm_version)
 {
 	auto inputForVersion = [](string const& _version)
 	{
@@ -749,22 +749,22 @@ BOOST_AUTO_TEST_CASE(evm_version)
 		)";
 	};
 	Json::Value result;
-	result = compile(inputForVersion("\"evmVersion\": \"homestead\","));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"homestead\"") != string::npos);
-	result = compile(inputForVersion("\"evmVersion\": \"tangerineWhistle\","));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"tangerineWhistle\"") != string::npos);
-	result = compile(inputForVersion("\"evmVersion\": \"spuriousDragon\","));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"spuriousDragon\"") != string::npos);
-	result = compile(inputForVersion("\"evmVersion\": \"byzantium\","));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"byzantium\"") != string::npos);
-	result = compile(inputForVersion("\"evmVersion\": \"constantinople\","));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"constantinople\"") != string::npos);
+	result = compile(inputForVersion("\"vvmVersion\": \"homestead\","));
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"homestead\"") != string::npos);
+	result = compile(inputForVersion("\"vvmVersion\": \"tangerineWhistle\","));
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"tangerineWhistle\"") != string::npos);
+	result = compile(inputForVersion("\"vvmVersion\": \"spuriousDragon\","));
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"spuriousDragon\"") != string::npos);
+	result = compile(inputForVersion("\"vvmVersion\": \"byzantium\","));
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"byzantium\"") != string::npos);
+	result = compile(inputForVersion("\"vvmVersion\": \"constantinople\","));
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"constantinople\"") != string::npos);
 	// test default
 	result = compile(inputForVersion(""));
-	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"byzantium\"") != string::npos);
+	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"vvmVersion\":\"byzantium\"") != string::npos);
 	// test invalid
-	result = compile(inputForVersion("\"evmVersion\": \"invalid\","));
-	BOOST_CHECK(result["errors"][0]["message"].asString() == "Invalid EVM version requested.");
+	result = compile(inputForVersion("\"vvmVersion\": \"invalid\","));
+	BOOST_CHECK(result["errors"][0]["message"].asString() == "Invalid VVM version requested.");
 }
 
 

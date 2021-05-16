@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
@@ -42,12 +42,12 @@ struct Options: boost::noncopyable
 	bool disableSMT = false;
 
 	void validate() const;
-	solidity::EVMVersion evmVersion() const;
+	solidity::VVMVersion vvmVersion() const;
 
 	static Options const& get();
 
 private:
-	std::string evmVersionString;
+	std::string vvmVersionString;
 
 	Options();
 };

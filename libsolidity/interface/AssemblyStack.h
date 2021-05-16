@@ -15,16 +15,16 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Full assembly stack that can support EVM-assembly and JULIA as input and EVM, EVM1.5 and
+ * Full assembly stack that can support VVM-assembly and JULIA as input and VVM, VVM1.5 and
  * eWasm as output.
  */
 
 #pragma once
 
 #include <libsolidity/interface/ErrorReporter.h>
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
-#include <libevmasm/LinkerObject.h>
+#include <libvvmasm/LinkerObject.h>
 
 #include <string>
 #include <memory>
@@ -42,22 +42,22 @@ struct Block;
 
 struct MachineAssemblyObject
 {
-	std::shared_ptr<eth::LinkerObject> bytecode;
+	std::shared_ptr<vap::LinkerObject> bytecode;
 	std::string assembly;
 };
 
 /*
- * Full assembly stack that can support EVM-assembly and JULIA as input and EVM, EVM1.5 and
+ * Full assembly stack that can support VVM-assembly and JULIA as input and VVM, VVM1.5 and
  * eWasm as output.
  */
 class AssemblyStack
 {
 public:
 	enum class Language { JULIA, Assembly, StrictAssembly };
-	enum class Machine { EVM, EVM15, eWasm };
+	enum class Machine { VVM, VVM15, eWasm };
 
-	explicit AssemblyStack(EVMVersion _evmVersion = EVMVersion(), Language _language = Language::Assembly):
-		m_language(_language), m_evmVersion(_evmVersion), m_errorReporter(m_errors)
+	explicit AssemblyStack(VVMVersion _vvmVersion = VVMVersion(), Language _language = Language::Assembly):
+		m_language(_language), m_vvmVersion(_vvmVersion), m_errorReporter(m_errors)
 	{}
 
 	/// @returns the scanner used during parsing
@@ -84,7 +84,7 @@ private:
 	bool analyzeParsed();
 
 	Language m_language = Language::Assembly;
-	EVMVersion m_evmVersion;
+	VVMVersion m_vvmVersion;
 
 	std::shared_ptr<Scanner> m_scanner;
 

@@ -131,7 +131,7 @@ user interface for the contract.
 Furthermore, Mist can use the userdoc to display a confirmation message to the user
 whenever they interact with the contract.
 
-Additional information about Ethereum Natural Specification (NatSpec) can be found `here <https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format>`_. 
+Additional information about Vapory Natural Specification (NatSpec) can be found `here <https://github.com/vaporyco/wiki/wiki/Vapory-Natural-Specification-Format>`_. 
 
 Usage for Source Code Verification
 ==================================

@@ -21,7 +21,7 @@
 
 #include <test/Options.h>
 
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 #include <libsolidity/interface/Exceptions.h>
 
 #include <boost/test/framework.hpp>
@@ -51,9 +51,9 @@ Options::Options()
 		}
 		else if (string(suite.argv[i]) == "--optimize")
 			optimize = true;
-		else if (string(suite.argv[i]) == "--evm-version")
+		else if (string(suite.argv[i]) == "--vvm-version")
 		{
-			evmVersionString = i + 1 < suite.argc ? suite.argv[i + 1] : "INVALID";
+			vvmVersionString = i + 1 < suite.argc ? suite.argv[i + 1] : "INVALID";
 			++i;
 		}
 		else if (string(suite.argv[i]) == "--show-messages")
@@ -64,11 +64,11 @@ Options::Options()
 			disableSMT = true;
 
 	if (!disableIPC && ipcPath.empty())
-		if (auto path = getenv("ETH_TEST_IPC"))
+		if (auto path = getenv("VAP_TEST_IPC"))
 			ipcPath = path;
 
 	if (testPath.empty())
-		if (auto path = getenv("ETH_TEST_PATH"))
+		if (auto path = getenv("VAP_TEST_PATH"))
 			testPath = path;
 }
 
@@ -85,16 +85,16 @@ void Options::validate() const
 		);
 }
 
-dev::solidity::EVMVersion Options::evmVersion() const
+dev::solidity::VVMVersion Options::vvmVersion() const
 {
-	if (!evmVersionString.empty())
+	if (!vvmVersionString.empty())
 	{
 		// We do this check as opposed to in the constructor because the BOOST_REQUIRE
 		// macros cannot yet be used in the constructor.
-		auto version = solidity::EVMVersion::fromString(evmVersionString);
-		BOOST_REQUIRE_MESSAGE(version, "Invalid EVM version: " + evmVersionString);
+		auto version = solidity::VVMVersion::fromString(vvmVersionString);
+		BOOST_REQUIRE_MESSAGE(version, "Invalid VVM version: " + vvmVersionString);
 		return *version;
 	}
 	else
-		return dev::solidity::EVMVersion();
+		return dev::solidity::VVMVersion();
 }

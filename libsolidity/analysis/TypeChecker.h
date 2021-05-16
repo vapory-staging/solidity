@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
 #include <libsolidity/ast/Types.h>
 #include <libsolidity/ast/ASTAnnotations.h>
@@ -45,8 +45,8 @@ class TypeChecker: private ASTConstVisitor
 {
 public:
 	/// @param _errorReporter provides the error logging functionality.
-	TypeChecker(EVMVersion _evmVersion, ErrorReporter& _errorReporter):
-		m_evmVersion(_evmVersion),
+	TypeChecker(VVMVersion _vvmVersion, ErrorReporter& _errorReporter):
+		m_vvmVersion(_vvmVersion),
 		m_errorReporter(_errorReporter)
 	{}
 
@@ -142,7 +142,7 @@ private:
 
 	ContractDefinition const* m_scope = nullptr;
 
-	EVMVersion m_evmVersion;
+	VVMVersion m_vvmVersion;
 
 	/// Flag indicating whether we are currently inside an EmitStatement.
 	bool m_insideEmitStatement = false;

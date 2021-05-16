@@ -17,7 +17,7 @@
 /** @file main.cpp
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
- * Ethereum client.
+ * Vapory client.
  */
 
 #include <fstream>
@@ -26,16 +26,16 @@
 #include <liblll/Compiler.h>
 #include <libdevcore/CommonIO.h>
 #include <libdevcore/CommonData.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <solidity/BuildInfo.h>
 
 using namespace std;
 using namespace dev;
 using namespace dev::solidity;
-using namespace dev::eth;
+using namespace dev::vap;
 
 static string const VersionString =
-	string(ETH_PROJECT_VERSION) +
+	string(VAP_PROJECT_VERSION) +
 	(string(SOL_VERSION_PRERELEASE).empty() ? "" : "-" + string(SOL_VERSION_PRERELEASE)) +
 	(string(SOL_VERSION_BUILDINFO).empty() ? "" : "+" + string(SOL_VERSION_BUILDINFO));
 
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 	}
 	else if (mode == Binary || mode == Hex)
 	{
-		auto bs = compileLLL(src, EVMVersion{}, optimise ? true : false, &errors, readFileAsString);
+		auto bs = compileLLL(src, VVMVersion{}, optimise ? true : false, &errors, readFileAsString);
 		if (mode == Hex)
 			cout << toHex(bs) << endl;
 		else if (mode == Binary)
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 	}
 	else if (mode == Assembly)
 	{
-		cout << compileLLLToAsm(src, EVMVersion{}, optimise ? true : false, &errors, readFileAsString) << endl;
+		cout << compileLLLToAsm(src, VVMVersion{}, optimise ? true : false, &errors, readFileAsString) << endl;
 	}
 
 	for (auto const& i: errors)

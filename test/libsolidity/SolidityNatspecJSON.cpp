@@ -47,7 +47,7 @@ public:
 	{
 		m_compilerStack.reset(false);
 		m_compilerStack.addSource("", "pragma solidity >=0.0;\n" + _code);
-		m_compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+		m_compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 		BOOST_REQUIRE_MESSAGE(m_compilerStack.parseAndAnalyze(), "Parsing contract failed");
 
 		Json::Value generatedDocumentation;
@@ -68,7 +68,7 @@ public:
 	{
 		m_compilerStack.reset(false);
 		m_compilerStack.addSource("", "pragma solidity >=0.0;\n" + _code);
-		m_compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+		m_compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 		BOOST_CHECK(!m_compilerStack.parseAndAnalyze());
 		BOOST_REQUIRE(Error::containsErrorOfType(m_compilerStack.errors(), Error::Type::DocstringParsingError));
 	}

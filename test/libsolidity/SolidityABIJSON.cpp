@@ -44,7 +44,7 @@ public:
 	{
 		m_compilerStack.reset(false);
 		m_compilerStack.addSource("", "pragma solidity >=0.0;\n" + _code);
-		m_compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
+		m_compilerStack.setVVMVersion(dev::test::Options::get().vvmVersion());
 		m_compilerStack.setOptimiserSettings(dev::test::Options::get().optimize);
 		BOOST_REQUIRE_MESSAGE(m_compilerStack.parseAndAnalyze(), "Parsing contract failed");
 

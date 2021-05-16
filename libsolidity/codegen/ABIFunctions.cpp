@@ -1404,7 +1404,7 @@ string ABIFunctions::shiftLeftFunction(size_t _numBits)
 	solAssert(_numBits < 256, "");
 
 	string functionName = "shift_left_" + to_string(_numBits);
-	if (m_evmVersion.hasBitwiseShifting())
+	if (m_vvmVersion.hasBitwiseShifting())
 	{
 		return createFunction(functionName, [&]() {
 			return
@@ -1442,7 +1442,7 @@ string ABIFunctions::shiftRightFunction(size_t _numBits)
 	// the opcodes SAR and SDIV behave differently with regards to rounding!
 
 	string functionName = "shift_right_" + to_string(_numBits) + "_unsigned";
-	if (m_evmVersion.hasBitwiseShifting())
+	if (m_vvmVersion.hasBitwiseShifting())
 	{
 		return createFunction(functionName, [&]() {
 			return

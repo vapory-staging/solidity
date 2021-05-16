@@ -21,11 +21,11 @@
 #pragma once
 
 #include <libsolidity/interface/Exceptions.h>
-#include <libsolidity/interface/EVMVersion.h>
+#include <libsolidity/interface/VVMVersion.h>
 
 #include <libsolidity/inlineasm/AsmScope.h>
 
-#include <libjulia/backends/evm/AbstractAssembly.h>
+#include <libjulia/backends/vvm/AbstractAssembly.h>
 
 #include <libsolidity/inlineasm/AsmDataForward.h>
 
@@ -56,7 +56,7 @@ public:
 	explicit AsmAnalyzer(
 		AsmAnalysisInfo& _analysisInfo,
 		ErrorReporter& _errorReporter,
-		EVMVersion _evmVersion,
+		VVMVersion _vvmVersion,
 		boost::optional<Error::Type> _errorTypeForLoose,
 		AsmFlavour _flavour = AsmFlavour::Loose,
 		julia::ExternalIdentifierAccess::Resolver const& _resolver = julia::ExternalIdentifierAccess::Resolver()
@@ -64,7 +64,7 @@ public:
 		m_resolver(_resolver),
 		m_info(_analysisInfo),
 		m_errorReporter(_errorReporter),
-		m_evmVersion(_evmVersion),
+		m_vvmVersion(_vvmVersion),
 		m_flavour(_flavour),
 		m_errorTypeForLoose(_errorTypeForLoose)
 	{}
@@ -113,7 +113,7 @@ private:
 	std::set<Scope::Variable const*> m_activeVariables;
 	AsmAnalysisInfo& m_info;
 	ErrorReporter& m_errorReporter;
-	EVMVersion m_evmVersion;
+	VVMVersion m_vvmVersion;
 	AsmFlavour m_flavour = AsmFlavour::Loose;
 	boost::optional<Error::Type> m_errorTypeForLoose;
 };

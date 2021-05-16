@@ -47,7 +47,7 @@ It performs function inlining such that the result of the inlining is an express
 only be done if the body of the function to be inlined has the form ``{ r := E }`` where ``r``
 is the single return value of the function, ``E`` is an expression and all arguments in the
 function call are so-called movable expressions. A movable expression is either a literal, a
-variable or a function call (or EVM opcode) which does not have side-effects and also does not
+variable or a function call (or VVM opcode) which does not have side-effects and also does not
 depend on any side-effects.
 
 As an example, neither ``mload`` nor ``mstore`` would be allowed.
@@ -62,7 +62,7 @@ is comparatively cheap to evaluate. Furthermore, it is only semantically equival
 the value of the expression did not change between the point of assignment and the
 point of use. The main benefit of this stage is that it can save stack slots if it
 leads to a variable being eliminated completely (see below), but it can also
-save a DUP opcode on the EVM if the expression is very cheap.
+save a DUP opcode on the VVM if the expression is very cheap.
 
 The algorithm only allows movable expressions (see above for a definition) in this case.
 Expressions that contain other variables are also disallowed if one of those variables
@@ -81,7 +81,7 @@ a loop or conditional, the first one is not inside), the first assignment is rem
 
 ## Expression Simplifier
 
-This step can only be applied for the EVM-flavoured dialect of iulia. It applies
+This step can only be applied for the VVM-flavoured dialect of iulia. It applies
 simple rules like ``x + 0 == x`` to simplify expressions.
 
 ## Ineffective Statement Remover

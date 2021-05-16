@@ -38,8 +38,8 @@
 #include <libsolidity/interface/GasEstimator.h>
 #include <libsolidity/interface/AssemblyStack.h>
 
-#include <libevmasm/Instruction.h>
-#include <libevmasm/GasMeter.h>
+#include <libvvmasm/Instruction.h>
+#include <libvvmasm/GasMeter.h>
 
 #include <libdevcore/Common.h>
 #include <libdevcore/CommonData.h>
@@ -84,9 +84,9 @@ static string const g_strCloneBinary = "clone-bin";
 static string const g_strCombinedJson = "combined-json";
 static string const g_strCompactJSON = "compact-format";
 static string const g_strContracts = "contracts";
-static string const g_strEVM = "evm";
-static string const g_strEVM15 = "evm15";
-static string const g_strEVMVersion = "evm-version";
+static string const g_strVVM = "vvm";
+static string const g_strVVM15 = "vvm15";
+static string const g_strVVMVersion = "vvm-version";
 static string const g_streWasm = "ewasm";
 static string const g_strFormal = "formal";
 static string const g_strGas = "gas";
@@ -178,8 +178,8 @@ static set<string> const g_combinedJsonArgs
 /// Possible arguments to for --machine
 static set<string> const g_machineArgs
 {
-	g_strEVM,
-	g_strEVM15,
+	g_strVVM,
+	g_strVVM15,
 	g_streWasm
 };
 
@@ -556,9 +556,9 @@ Allowed options)",
 		(g_argVersion.c_str(), "Show version and exit.")
 		(g_strLicense.c_str(), "Show licensing information and exit.")
 		(
-			g_strEVMVersion.c_str(),
+			g_strVVMVersion.c_str(),
 			po::value<string>()->value_name("version"),
-			"Select desired EVM version. Either homestead, tangerineWhistle, spuriousDragon, byzantium (default) or constantinople."
+			"Select desired VVM version. Either homestead, tangerineWhistle, spuriousDragon, byzantium (default) or constantinople."
 		)
 		(g_argOptimize.c_str(), "Enable bytecode optimizer.")
 		(
@@ -626,8 +626,8 @@ Allowed options)",
 		(g_argAst.c_str(), "AST of all source files.")
 		(g_argAstJson.c_str(), "AST of all source files in JSON format.")
 		(g_argAstCompactJson.c_str(), "AST of all source files in a compact JSON format.")
-		(g_argAsm.c_str(), "EVM assembly of the contracts.")
-		(g_argAsmJson.c_str(), "EVM assembly of the contracts in JSON format.")
+		(g_argAsm.c_str(), "VVM assembly of the contracts.")
+		(g_argAsmJson.c_str(), "VVM assembly of the contracts in JSON format.")
 		(g_argOpcodes.c_str(), "Opcodes of the contracts.")
 		(g_argBinary.c_str(), "Binary of the contracts in hex.")
 		(g_argBinaryRuntime.c_str(), "Binary of the runtime part of the contracts in hex.")
@@ -770,16 +770,16 @@ bool CommandLineInterface::processInput()
 			if (!parseLibraryOption(library))
 				return false;
 
-	if (m_args.count(g_strEVMVersion))
+	if (m_args.count(g_strVVMVersion))
 	{
-		string versionOptionStr = m_args[g_strEVMVersion].as<string>();
-		boost::optional<EVMVersion> versionOption = EVMVersion::fromString(versionOptionStr);
+		string versionOptionStr = m_args[g_strVVMVersion].as<string>();
+		boost::optional<VVMVersion> versionOption = VVMVersion::fromString(versionOptionStr);
 		if (!versionOption)
 		{
-			cerr << "Invalid option for --evm-version: " << versionOptionStr << endl;
+			cerr << "Invalid option for --vvm-version: " << versionOptionStr << endl;
 			return false;
 		}
-		m_evmVersion = *versionOption;
+		m_vvmVersion = *versionOption;
 	}
 
 	if (m_args.count(g_argAssemble) || m_args.count(g_argStrictAssembly) || m_args.count(g_argJulia))
@@ -789,14 +789,14 @@ bool CommandLineInterface::processInput()
 		using Input = AssemblyStack::Language;
 		using Machine = AssemblyStack::Machine;
 		Input inputLanguage = m_args.count(g_argJulia) ? Input::JULIA : (m_args.count(g_argStrictAssembly) ? Input::StrictAssembly : Input::Assembly);
-		Machine targetMachine = Machine::EVM;
+		Machine targetMachine = Machine::VVM;
 		if (m_args.count(g_argMachine))
 		{
 			string machine = m_args[g_argMachine].as<string>();
-			if (machine == g_strEVM)
-				targetMachine = Machine::EVM;
-			else if (machine == g_strEVM15)
-				targetMachine = Machine::EVM15;
+			if (machine == g_strVVM)
+				targetMachine = Machine::VVM;
+			else if (machine == g_strVVM15)
+				targetMachine = Machine::VVM15;
 			else if (machine == g_streWasm)
 				targetMachine = Machine::eWasm;
 			else
@@ -829,7 +829,7 @@ bool CommandLineInterface::processInput()
 			m_compiler->addSource(sourceCode.first, sourceCode.second);
 		if (m_args.count(g_argLibraries))
 			m_compiler->setLibraries(m_libraries);
-		m_compiler->setEVMVersion(m_evmVersion);
+		m_compiler->setVVMVersion(m_vvmVersion);
 		// TODO: Perhaps we should not compile unless requested
 		bool optimize = m_args.count(g_argOptimize) > 0;
 		unsigned runs = m_args[g_argOptimizeRuns].as<unsigned>();
@@ -984,11 +984,11 @@ void CommandLineInterface::handleAst(string const& _argStr)
 		vector<ASTNode const*> asts;
 		for (auto const& sourceCode: m_sourceCodes)
 			asts.push_back(&m_compiler->ast(sourceCode.first));
-		map<ASTNode const*, eth::GasMeter::GasConsumption> gasCosts;
+		map<ASTNode const*, vap::GasMeter::GasConsumption> gasCosts;
 		// FIXME: shouldn't this be done for every contract?
 		if (m_compiler->runtimeAssemblyItems(m_compiler->lastContractName()))
 			gasCosts = GasEstimator::breakToStatementLevel(
-				GasEstimator(m_evmVersion).structuralEstimation(*m_compiler->runtimeAssemblyItems(m_compiler->lastContractName()), asts),
+				GasEstimator(m_vvmVersion).structuralEstimation(*m_compiler->runtimeAssemblyItems(m_compiler->lastContractName()), asts),
 				asts
 			);
 
@@ -1109,7 +1109,7 @@ bool CommandLineInterface::assemble(
 	map<string, AssemblyStack> assemblyStacks;
 	for (auto const& src: m_sourceCodes)
 	{
-		auto& stack = assemblyStacks[src.first] = AssemblyStack(m_evmVersion, _language);
+		auto& stack = assemblyStacks[src.first] = AssemblyStack(m_vvmVersion, _language);
 		try
 		{
 			if (!stack.parseAndAnalyze(src.first, src.second))
@@ -1148,8 +1148,8 @@ bool CommandLineInterface::assemble(
 	for (auto const& src: m_sourceCodes)
 	{
 		string machine =
-			_targetMachine == AssemblyStack::Machine::EVM ? "EVM" :
-			_targetMachine == AssemblyStack::Machine::EVM15 ? "EVM 1.5" :
+			_targetMachine == AssemblyStack::Machine::VVM ? "VVM" :
+			_targetMachine == AssemblyStack::Machine::VVM15 ? "VVM 1.5" :
 			"eWasm";
 		cout << endl << "======= " << src.first << " (" << machine << ") =======" << endl;
 		AssemblyStack& stack = assemblyStacks[src.first];
@@ -1204,7 +1204,7 @@ void CommandLineInterface::outputCompilationResults()
 		if (needsHumanTargetedStdout(m_args))
 			cout << endl << "======= " << contract << " =======" << endl;
 
-		// do we need EVM assembly?
+		// do we need VVM assembly?
 		if (m_args.count(g_argAsm) || m_args.count(g_argAsmJson))
 		{
 			string ret;
@@ -1215,11 +1215,11 @@ void CommandLineInterface::outputCompilationResults()
 
 			if (m_args.count(g_argOutputDir))
 			{
-				createFile(m_compiler->filesystemFriendlyName(contract) + (m_args.count(g_argAsmJson) ? "_evm.json" : ".evm"), ret);
+				createFile(m_compiler->filesystemFriendlyName(contract) + (m_args.count(g_argAsmJson) ? "_vvm.json" : ".vvm"), ret);
 			}
 			else
 			{
-				cout << "EVM assembly:" << endl << ret << endl;
+				cout << "VVM assembly:" << endl << ret << endl;
 			}
 		}
 
